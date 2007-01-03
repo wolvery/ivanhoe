@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='ISO-8859-1'?> 
+<!DOCTYPE map 
+PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Map Version 1.0//EN" 
+"http://java.sun.com/products/javahelp/map_1_0.dtd"> 
+
+<map version="1.0"> 
+
+	<mapID target="top" url="index.html" />
+	<mapID target="html.getting_started" url="html/getting_started.html" />
+	<mapID target="html.known_issues" url="html/known_issues.html" />
+	<mapID target="html.whats_new" url="html/whats_new.html" />
+	<mapID target="images.start" url="images/start.gif" />
+
+</map>

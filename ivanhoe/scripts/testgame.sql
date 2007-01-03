@@ -1,0 +1,1 @@
+INSERT INTO game VALUES (1, 17, 'TestGame', 'This is a test.', '', 0, 0, 0, 0, 1 );
