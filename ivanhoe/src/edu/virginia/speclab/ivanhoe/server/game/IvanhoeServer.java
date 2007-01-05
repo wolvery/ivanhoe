@@ -8,16 +8,16 @@
 package edu.virginia.speclab.ivanhoe.server.game;
 
 import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 import java.util.Properties;
 
 import edu.virginia.speclab.ivanhoe.shared.*;
-import edu.virginia.speclab.ivanhoe.shared.data.GameInfo;
 import edu.virginia.speclab.ivanhoe.shared.database.DBManager;
 import edu.virginia.speclab.ivanhoe.shared.message.*;
 import edu.virginia.speclab.ivanhoe.server.AdminListener;
-import edu.virginia.speclab.ivanhoe.server.exception.MapperException;
-import edu.virginia.speclab.ivanhoe.server.mapper.*;
+import edu.virginia.speclab.ivanhoe.server.ProxyMgr;
 
 /**
  * @author lfoster
@@ -26,17 +26,21 @@ import edu.virginia.speclab.ivanhoe.server.mapper.*;
  * configure and manage one or many games of Ivanhoe. It will
  * also broadcast all of the games it has available using UDP
  */
-public class IvanhoeServer 
+public class IvanhoeServer
 {
    private AdminListener adminListener;
    private String discourseFieldRoot;
    private IvanhoeGame ivanhoeGame;
-  
+   private ProxyMgr proxyMgr;
+
    private String name;
    private int basePort;
    private boolean mailEnabled;
    private String mailHost;
    private String mailFrom;
+   
+   private ServerSocket socket;
+   private volatile boolean running;
    
    private static final String PROPERTIES_FILE = System.getProperty("IVANHOE_DIR",".")+"/ivanhoe.properties";
 
@@ -52,9 +56,11 @@ public class IvanhoeServer
          System.err.println("Unable to start server, see log for details");
          System.exit(-1);
       }
-
+   
       SimpleLogger.logInfo("Server is ready");
       System.out.println("Ivanhoe game server is running");
+      
+      server.mainLoop();
    }
 
    /**
@@ -136,6 +142,9 @@ public class IvanhoeServer
          this.mailEnabled = false;
       this.mailHost = props.getProperty("mailHost");
       this.mailFrom = props.getProperty("mailFromAddress");
+      
+      // create the server wide proxy manager
+      this.proxyMgr = new ProxyMgr();
      
       // listen for admin connections
       try
@@ -145,13 +154,18 @@ public class IvanhoeServer
       catch (IOException e2)
       {
          SimpleLogger.logError("Unable to start admin listener", e2);
+         return false;
       }
+      
+      try {
+  		this.socket = new ServerSocket(getBasePort());
+	  } 
+      catch (IOException e1) {
+          SimpleLogger.logError("Unable to create server socket", e1);
+          return false;
+	  }
 
-      // start up the actual game
-      int gameID = Integer.parseInt(props.getProperty("gameID"));
-      this.ivanhoeGame = startGame(gameID);
-
-      return (this.ivanhoeGame != null);
+      return true;
    }
    
    public static Properties loadIvanhoeProperties()
@@ -208,7 +222,33 @@ public class IvanhoeServer
    {
       return this.discourseFieldRoot;
    }
-
+   
+   /**
+    * Accept connections and add them to an unauthorized proxy list
+    */
+   private void mainLoop()
+   {
+	  
+      Socket client = null;
+      this.running = true;
+      while (this.running == true)
+      {
+         client = null;
+         
+         try
+         {
+        	// when a new connection is formed, spawn a game object which will handle
+        	// this communication session with the client.
+            client = this.socket.accept();
+            new IvanhoeGame(new CommEndpoint(client),this,this.proxyMgr);
+         }
+         catch (IOException e)
+         {
+            SimpleLogger.logInfo("Socket closed");
+         }
+      }
+   }
+   
    /**
     * Shutdown the server
     */
@@ -254,14 +294,17 @@ public class IvanhoeServer
    public boolean retireGame()
    {
       // now mark as retired
-      GameMapper mapper = new GameMapper();
+    // GameMapper mapper = new GameMapper();
       
-      boolean success = mapper.retireGame(ivanhoeGame.getInfo().getName());
+      //TODO refactor this to not rely on state
+      //boolean success = mapper.retireGame(ivanhoeGame.getInfo().getName());
 
-      // shut down the server
-      if( success ) shutdown();
+//      // shut down the server
+//      if( success ) shutdown();
+//      
+//      return success;
       
-      return success;
+      return false;
    }
    
    /**
@@ -269,40 +312,19 @@ public class IvanhoeServer
     */
    public boolean deleteGame()
    {
-      // now mark as deleted
-      GameMapper mapper = new GameMapper();
-      boolean success = mapper.deleteGame(ivanhoeGame.getInfo().getName());
+     // // now mark as deleted
+   //   GameMapper mapper = new GameMapper();
 
-      // shut down the server
-      if( success ) shutdown();
+      //TODO refactor this to not rely on state
+      //boolean success = mapper.deleteGame(ivanhoeGame.getInfo().getName());
+
+//      // shut down the server
+//      if( success ) shutdown();
+//      
+//      return success;
       
-      return success;
+      return false;
    }
-   
-   private IvanhoeGame startGame(int gameID) {
-		GameMapper mapper = new GameMapper();
-		IvanhoeGame game = null;
-
-		try {
-			GameInfo info = mapper.get(gameID);
-			if( info == null ) {
-				SimpleLogger.logError("invalid game id "+gameID+" unable to start game.");
-			}
-			else {
-				if (info.isRetired() == false) {
-					game = new IvanhoeGame(info, this);
-					game.configureEmail(this.mailEnabled, this.mailHost,this.mailFrom);
-					game.startup(this.basePort);
-				} else {
-					SimpleLogger.logError("Not staring retired game ["
-							+ info.getName() + "]");
-				}
-			}
-		} catch (MapperException e) {
-			SimpleLogger.logError("Unable to lookup game", e);
-		}
-		return game;
-	}
    
    public void kickAllPlayers()
    {
@@ -322,6 +344,5 @@ public class IvanhoeServer
 	     }
       return false;    
    }
-
    
 }

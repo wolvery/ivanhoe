@@ -143,8 +143,14 @@ public class Authenticator {
 		}
 	}
 
-	public String performAuthentication(String userName, String password,
-			boolean retry) {
+	/**
+	 * Check to see if this a valid user. 
+	 * @param userName The user's name
+	 * @param password The user's md5 encrypted password
+	 * @param retry Set true to retry if database connection is dead
+	 * @return A zero length string if successful, otherwise a string describing the failure.
+	 */
+	public String performAuthentication(String userName, String password, boolean retry) {
 		SimpleLogger.logInfo("Authenticating user [" + userName + "]");
 
 		// iterate over rules

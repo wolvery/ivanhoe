@@ -69,7 +69,7 @@ public class LobbyProxy extends ClientProxy
     public void joinGame(String gameHost, int gamePort)
             throws IvanhoeException
     {
-        gameProxy = new GameProxy(userName, password);
+        gameProxy = new GameProxy(userName, password,1);
         
         // make connection to the game
         SimpleLogger.logInfo("Connecting to " + gameHost + ":" + gamePort

@@ -27,94 +27,42 @@ import edu.virginia.speclab.ivanhoe.shared.message.*;
  *
  * Class representing a game of Ivanhoe
  */
-public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, IDocumentHandler
+public class IvanhoeGame implements IMessageHandler, IDocumentHandler
 {
    private static final int MAX_ROLE_NAME_SIZE = 50;
    
-   private final DocumentReceiver receiver;
-   private final UnAuthorizedProxyManager authenticator;
-   private final IvanhoeProxyMgr proxyMgr;
-   private final DiscussionMgr discussion;
-   private final Messenger messenger;
-   private final GameInfo info;
-   private final String discourseFieldDir;
-   private final IvanhoeServer server;
-   private int gamePort;
+   private  DocumentReceiver receiver;
+   private  ProxyMgr proxyMgr;
+   private  DiscussionMgr discussion;
+   private  Messenger messenger;
+   private  String discourseFieldDir;
+   private  IvanhoeServer server;
+
+   private  GameInfo gameInfo;
+   
    
    /**
     * Construct a new game instance
     * @param gameInfo the info describing this game
     * @param server the IvanhoeServer on which this game is hosted
     */
-   public IvanhoeGame(GameInfo gameInfo, IvanhoeServer server)
+   public IvanhoeGame( CommEndpoint endpoint, IvanhoeServer server, ProxyMgr proxyMgr )
    {      
       // hold reference to the server
       this.server = server;
-      this.info = gameInfo;
       
-      // create game components
-      this.proxyMgr = new IvanhoeProxyMgr();
-      this.discussion = new DiscussionMgr(this);
-      this.messenger = new Messenger(this.server.getName(), this);
-      this.authenticator = new UnAuthorizedProxyManager();
-      
-      this.discourseFieldDir = server.getDiscourseFieldRoot() + File.separator
-              + this.info.getName();
-      this.receiver = new DocumentReceiver(discourseFieldDir, gameInfo.getId());
-      this.receiver.addDocumentHandler(this);
-      
-      // add a game authentication rule if necessary
-      //TODO enable game access restrictions
-//      if (info.isRestricted() == true)
-//      {
-//         this.authenticator.addRule( new GameEntryCheck(this.info.getId(), this.info.getName()) );
-//      }
-   }
+      this.proxyMgr = proxyMgr;
    
-   /**
-    * Start the game at the specified port
-    * @param port
-    * @return
-    */
-   public boolean startup(int port)
-   {
-      SimpleLogger.logInfo("Starting game " + this.info.getName() + " at port " + port);
-        
-      this.gamePort = port+2;
-      try
-      {
-         this.authenticator.startup(port);
-         this.authenticator.registerAuthListener(this);
-      }
-      catch (IOException e)
-      {
-         SimpleLogger.logError("Unable to start game authenticator:  " + e.toString());
-         return false;
-      }
-      return true;
-   }
-   
-   /**
-    * Shutdown this game
-    */
-   public void shutdown()
-   {
-      this.authenticator.shutdown();
-      this.proxyMgr.removeAllProxies();
-   }
-   
-   /**
-    * Implementation of the IAuthenticationListener interface
-    * It is called when a user has been successfully authorized
-    */
-   public void userAuthorized(String userName, AbstractProxy authProxy)
-   {
       // factory a user proxy, setup message & disconnect handling
       // and add it to the list of managed proxies
       UserProxy proxy = null;
       try
       {
-         proxy = new UserProxy(userName, authProxy, getId() );
+    	 // fire up the user proxy. the proxy contains the main execution
+    	 // thread for this connection. it will send messages back
+    	 // to IvanhoeGame to be handled.
+         proxy = new UserProxy();
+         proxy.connect(endpoint);
          proxy.setDefaultMsgHandler( this );
          this.proxyMgr.addProxy( proxy );
          proxy.registerDisconnectHandler( this.proxyMgr );
@@ -125,14 +73,46 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
          
          // enable the proxy
          proxy.setEnabled(true);
-       
-         // tell the client which game this is
-         proxy.sendMessage(new GameInfoMsg2(this.info));
+      
       }
       catch (MapperException e)
       {
          proxy.disconnect();
-      }
+      }   
+   }
+   
+   // TODO still need this?
+//   private IvanhoeGame startGame(int gameID) {
+//		GameMapper mapper = new GameMapper();
+//		IvanhoeGame game = null;
+//
+//		try {
+//			GameInfo info = mapper.get(gameID);
+//			if( info == null ) {
+//				SimpleLogger.logError("invalid game id "+gameID+" unable to start game.");
+//			}
+//			else {
+//				if (info.isRetired() == false) {
+//					game = new IvanhoeGame(info, this);
+//					game.configureEmail(this.mailEnabled, this.mailHost,this.mailFrom);
+//					game.startup(this.basePort);
+//				} else {
+//					SimpleLogger.logError("Not staring retired game ["
+//							+ info.getName() + "]");
+//				}
+//			}
+//		} catch (MapperException e) {
+//			SimpleLogger.logError("Unable to lookup game", e);
+//		}
+//		return game;
+//	}
+   
+   /**
+    * Shutdown this game
+    */
+   public void shutdown()
+   {
+      this.proxyMgr.removeAllProxies(this.getGameId());
    }
    
    /**
@@ -141,36 +121,11 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
     */
    public void broadcastMessage(Message msg)
    {
+	  msg.setGameID(this.getGameId());
       this.proxyMgr.broadcastMessage(msg);
    }
    
-   /**
-    * GameID accessor
-    * @return
-    */
-   public int getId()
-   {
-      return this.info.getId();
-   }
-   
-   /**
-    * Game Name accessor
-    * @return
-    */
-   public GameInfo getInfo()
-   {
-      return this.info;
-   }
 
-   /**
-    * Accessor for port
-    * @return
-    */
-   public int getPort()
-   {
-      return this.gamePort;
-   }
-   
    /**
     * Public method used to send a message to a particular player
     * @param string
@@ -189,6 +144,38 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
             ". Not found in proxy mgr");
       } 
    }
+   
+   // create game components for the specified game ID
+   private boolean initGame( int gameID ) {
+	   
+	   // if we don't have the game info yet, look it up
+	   GameMapper gameMapper = new GameMapper();
+	   
+	   try {
+		this.gameInfo = gameMapper.get(gameID);
+	   } 
+	   catch (MapperException e) {
+		   SimpleLogger.logError("Unable to load game info for game id= "+gameID);
+		   return false;
+	   }
+
+	   // create game components
+	   this.discussion = new DiscussionMgr(this);
+	   this.messenger = new Messenger(this.server.getName(), this);
+	      
+	   this.discourseFieldDir = server.getDiscourseFieldRoot() + File.separator + this.gameInfo.getName();
+	   this.receiver = new DocumentReceiver(discourseFieldDir, gameInfo.getId());
+	   this.receiver.addDocumentHandler(this);		   	 
+	   
+	   // add a game authentication rule if necessary
+	      //TODO enable game access restrictions
+//	      if (info.isRestricted() == true)
+//	      {
+//	         this.authenticator.addRule( new GameEntryCheck(this.info.getId(), this.info.getName()) );
+//	      }
+	   
+	   return true;
+   }
 
    
    /**
@@ -196,7 +183,17 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
     */
    public void handleMessage(Message msg)
    {
-       if (msg.getType().equals(MessageType.USER_ONLINE))
+
+	   // init the game that is related to this message
+	   if( !initGame(msg.getGameID()) ) {
+		   SimpleLogger.logError("Unable to init game with game ID "+msg.getGameID());
+		   return;			   
+	   }
+	   
+	   if(msg.getType().equals(MessageType.LOGIN)) {
+		   handleLogin(msg.getSender());
+	   } 
+	   else if (msg.getType().equals(MessageType.USER_ONLINE))
        {
           handleUserOnline(msg.getSender());
        }
@@ -246,6 +243,23 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
        }           
    }
 
+   private void handleLogin(String sender) {
+	
+	  UserProxy user = this.proxyMgr.getProxyByName(sender); 
+	   
+	  // respond to the client in the manner it expects
+      LoginResponseMsg resp = new LoginResponseMsg();
+      resp.setSuccess(true);
+      user.sendMessage(resp);
+      
+	   // give them the time of day
+	   TimeSynch timeSynchMsg = new TimeSynch();
+	   user.sendMessage(timeSynchMsg);
+	     
+       // tell the client details about this game
+       user.sendMessage(new GameInfoMsg2(this.getInfo()));	   
+    }
+
 // log an error message from the client.
    private void handleClientError(ClientErrorMsg msg)
    {
@@ -263,10 +277,10 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
 	    
 	    try 
 	    {
-            ReferenceResourceMapper.updateReferences(referenceList,this.getId());
+            ReferenceResourceMapper.updateReferences(referenceList,msg.getGameID());
             
             // broadcast new bookmark list 
-            this.proxyMgr.broadcastMessage(msg);   
+            broadcastMessage(msg);   
         } 
 	    catch (MapperException e) 
 	    {
@@ -317,7 +331,7 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
             sendDocumentVersionsToPlayer(msg.getSender(),role.getId());
             
             // send the move in progress 
-            Move move = MoveMapper.getPendingMove( getId(), role.getId() );
+            Move move = MoveMapper.getPendingMove( msg.getGameID(), role.getId() );
             RestoreMsg restore = new RestoreMsg(move);
             user.sendMessage(restore);
         }
@@ -331,7 +345,7 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
     {
         // send a list of all published docs to newPlayer
         DiscourseFieldMapper mapper = new DiscourseFieldMapper();
-        Iterator docIter = mapper.getDocumentList(getId()).iterator();
+        Iterator docIter = mapper.getDocumentList(getGameId()).iterator();
         final String roleName = proxy.getCurrentRole().getName();
      
         while (docIter.hasNext())
@@ -341,7 +355,7 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
         }
         
         // send a list of this players pending docs
-        docIter = mapper.getPendingDocuments(getId(), roleName).iterator();
+        docIter = mapper.getPendingDocuments(getGameId(), roleName).iterator();
         while (docIter.hasNext())
         {
            this.proxyMgr.sendTo(proxy.getID(), 
@@ -462,7 +476,7 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
       }
       else
       {
-         user.sendMessage( new PlayerListMsg(this.proxyMgr.getNames()));
+         user.sendMessage( new PlayerListMsg(this.proxyMgr.getNames(msg.getGameID())));
       }
    }
 
@@ -473,7 +487,7 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
    private void handleMoveCancel(CancelMoveMsg msg)
    {
       SimpleLogger.logInfo("Reverting pending move for " + msg.getSender());
-      MoveMapper.cancelPendingMove(getId(), msg.getRoleID());
+      MoveMapper.cancelPendingMove(msg.getGameID(), msg.getRoleID());
    }
 
    /**
@@ -498,7 +512,7 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
       else
       {
          // just broadcast out to all in lobby
-         this.proxyMgr.broadcastMessage(msg);
+    	 broadcastMessage(msg);
       }
    }
 
@@ -509,7 +523,7 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
    private void handleDeleteDocument(DeleteDocumentMsg msg)
    {
       DiscourseFieldMapper mapper = new DiscourseFieldMapper();
-      mapper.deleteDocument(msg.getInfo().getTitle(), info.getId());
+      mapper.deleteDocument(msg.getInfo().getTitle(), msg.getGameID());
    }
 
    /**
@@ -649,7 +663,7 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
       // send the history of all moves made by all players
       try
       {
-         List versions = DocumentVersionMapper.getDocumentVersions(getId(),currentRoleID);
+         List versions = DocumentVersionMapper.getDocumentVersions(getGameId(),currentRoleID);
          
          if (versions.size() > 0)
          {
@@ -685,7 +699,7 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
           if (version != null)
           {
              DocumentVersionMsg msg = new DocumentVersionMsg(version);
-             this.proxyMgr.broadcastMessage(msg);
+             broadcastMessage(msg);
           }
           else
           {
@@ -712,7 +726,7 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
         try 
 	    {
             CategoryListMsg msg = new CategoryListMsg();
-            List categoryList = CategoryMapper.getCategories(this.getId());
+            List categoryList = CategoryMapper.getCategories(this.getGameId());
             
             if( !categoryList.isEmpty() )
             {                
@@ -738,7 +752,7 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
         try 
 	    {
             ReferenceListMsg msg = new ReferenceListMsg();
-            List references = ReferenceResourceMapper.getReferences(this.getId());
+            List references = ReferenceResourceMapper.getReferences(this.getGameId());
             
             for( Iterator i = references.iterator(); i.hasNext(); )
             {
@@ -762,7 +776,7 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
        
        try 
        {
-           int gameId = this.getId();
+           int gameId = this.getGameId();
            if( RoleMapper.hasRole(gameId,userData.getId()) == false )
            {               
                // player doesn't have a role, create one and add it to DB
@@ -786,7 +800,7 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
          
 	     try 
 	     {	        
-	        List roleList = RoleMapper.getGameRoles(getId());
+	        List roleList = RoleMapper.getGameRoles(getGameId());
 	        if (roleList.size() > 0)
 	        {
 	           for( Iterator i = roleList.iterator(); i.hasNext(); )
@@ -847,7 +861,8 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
    {
       SimpleLogger.logInfo("Document " + changedDocInfo.getTitle() 
          + " has changed. Notifying all players");
-      this.proxyMgr.broadcastMessage( new DocumentChangedMsg(changedDocInfo));
+      DocumentChangedMsg msg =  new DocumentChangedMsg(changedDocInfo);
+      broadcastMessage(msg);
    }
 
    /**
@@ -863,7 +878,7 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
          dfMapper.addPendingDocument(getInfo().getName(),
                  newDocInfo.getTitle(), newDocInfo.getId().intValue());
          DocumentCompleteMsg dcMsg = new DocumentCompleteMsg(newDocInfo);
-         this.proxyMgr.broadcastMessage(dcMsg);
+         broadcastMessage(dcMsg);
       }
       catch (MapperException e)
       {
@@ -901,14 +916,14 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
           if (moveMsg.getMove().getId() > -1)
           {
              SimpleLogger.logInfo("Updating prior move");
-             success = moveMapper.update( getId(), moveMsg.getMove(),
+             success = moveMapper.update( moveMsg.getGameID(), moveMsg.getMove(),
                      moveMsg.getDocumentVersionOrigins(), true );
              move = MoveMapper.getMove( moveMsg.getMove().getId() );
           }
           else
           {
              SimpleLogger.logInfo("Adding new move");
-             move = moveMapper.insert( getId(), moveMsg.getMove(),
+             move = moveMapper.insert( moveMsg.getGameID(), moveMsg.getMove(),
                      moveMsg.getDocumentVersionOrigins(), true ) ;
              success = ( move != null ); 
           }
@@ -934,7 +949,7 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
          }
 
          // broadcast the move to everyone
-         this.proxyMgr.broadcastMessage( broadcastMoveMsg );
+         broadcastMessage( broadcastMoveMsg );
          
          // send move response to submitting player
          MoveResponseMsg resp = new MoveResponseMsg(true, 
@@ -946,7 +961,7 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
          
          // broadcast move notification
          ChatMsg chat = new ChatMsg("Ivanhoe", move.getRoleName() + " has submitted a move");
-         this.proxyMgr.broadcastMessage(chat );   
+         broadcastMessage(chat );   
       }
       else
       {
@@ -966,8 +981,8 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
          
       // grab a list of pending documents for this player
       // and remove the pending status
-      List pendingAdds = mapper.getPendingDocuments(getId(), playerName);
-      mapper.commitDocumentAdds(getId(), playerName);
+      List pendingAdds = mapper.getPendingDocuments(getGameId(), playerName);
+      mapper.commitDocumentAdds(getGameId(), playerName);
        
       // Let everyone else know a doc has been added
       for (Iterator itr = pendingAdds.iterator();itr.hasNext();)
@@ -976,8 +991,8 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
           docInfo.setPublishedDocument(true);
           ChatMsg chat = new ChatMsg( "Ivanhoe", playerName + " has added document " +
           docInfo.getTitle() + " to the discourse field");
-          this.proxyMgr.broadcastMessage( chat );
-          this.proxyMgr.broadcastMessage( new DocumentInfoMsg(docInfo)); 
+          broadcastMessage( chat );
+          broadcastMessage( new DocumentInfoMsg(docInfo)); 
       }
   
    }
@@ -994,7 +1009,7 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
            
       try
       {
-         List history = MoveMapper.getMoveHistory(getId());
+         List history = MoveMapper.getMoveHistory(getGameId());
          if (history.size() > 0)
          {
             MoveMsg msg;
@@ -1136,7 +1151,7 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
     */
    public int getPlayerCount()
    {
-      return this.proxyMgr.getNumProxies();
+      return this.proxyMgr.getNumProxies(this.getGameId());
    }
 
    /**
@@ -1162,8 +1177,8 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
    
    public void kickAllPlayers()
    {
-       this.proxyMgr.broadcastMessage(new PlayerKickedMsg("kicking all players"));
-       Thread kickingThread = new KickingThread(this.proxyMgr, KickingThread.KICK_GRACE_TIME);
+       broadcastMessage(new PlayerKickedMsg("kicking all players") );
+       Thread kickingThread = new KickingThread(this.proxyMgr, this.getGameId(), KickingThread.KICK_GRACE_TIME);
        kickingThread.start();
    }
    
@@ -1173,7 +1188,7 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
     */
    public void kickPlayer(String kickedPlayer)
    {
-      AbstractProxy kicked = this.proxyMgr.getProxyByName(kickedPlayer);
+      UserProxy kicked = this.proxyMgr.getProxyByName(kickedPlayer);
       kicked.sendMessage(new PlayerKickedMsg("Kicked by admin"));
       
       Thread kickingThread = new KickingThread(this.proxyMgr, kicked, KickingThread.KICK_GRACE_TIME);
@@ -1183,5 +1198,13 @@ public class IvanhoeGame implements IMessageHandler, IAuthenticationListener, ID
    public String getDiscourseFieldDir()
    {
        return discourseFieldDir;
+   }
+   
+   public GameInfo getInfo() {
+	   return this.gameInfo;
+   }
+   
+   public int getGameId() {
+	   return (this.gameInfo != null) ? this.gameInfo.getId() : 0;
    }
 }

@@ -83,14 +83,14 @@ public class Messenger
          {
             SimpleLogger.logInfo("Sending email notification of move by "
                + move.getSender() + " to all authorized players");            
-            recipientNames = UserMapper.getAllUserNames(this.game.getId());
+            recipientNames = UserMapper.getAllUserNames(this.game.getGameId());
          }
          else
          {
             SimpleLogger.logInfo("Sending email notification of move by "
                + move.getSender() + " to active players");
             
-            recipientNames = MoveMapper.getActivePlayers(this.game.getId());
+            recipientNames = MoveMapper.getActivePlayers(this.game.getGameId());
          }
          
          for (Iterator itr = recipientNames.iterator();itr.hasNext();)

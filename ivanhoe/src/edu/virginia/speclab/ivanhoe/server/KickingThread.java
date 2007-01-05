@@ -3,7 +3,7 @@
  */
 package edu.virginia.speclab.ivanhoe.server;
 
-import edu.virginia.speclab.ivanhoe.shared.AbstractProxy;
+import edu.virginia.speclab.ivanhoe.server.game.UserProxy;
 
 /**
  * @author benc
@@ -13,17 +13,19 @@ public class KickingThread extends Thread
     public static final int KICK_GRACE_TIME = 30000;
 
     private final ProxyMgr proxyMgr; 
-    private final AbstractProxy kickedProxy;
+    private final UserProxy kickedProxy;
+    private int gameToDie;
     private final int timeout;
     
-    public KickingThread(ProxyMgr proxyMgr, int timeout)
+    public KickingThread(ProxyMgr proxyMgr, int gameID, int timeout)
     {
         this.proxyMgr = proxyMgr;
         this.kickedProxy = null;
+        this.gameToDie = gameID;
         this.timeout = timeout;
     }
     
-    public KickingThread(ProxyMgr proxyMgr, AbstractProxy kickedProxy, int timeout)
+    public KickingThread(ProxyMgr proxyMgr, UserProxy kickedProxy, int timeout)
     {
         this.proxyMgr = proxyMgr;
         this.kickedProxy = kickedProxy;
@@ -50,7 +52,7 @@ public class KickingThread extends Thread
         }
         else
         {
-            proxyMgr.removeAllProxies();
+            proxyMgr.removeAllProxies(gameToDie);
         }
     }
 }

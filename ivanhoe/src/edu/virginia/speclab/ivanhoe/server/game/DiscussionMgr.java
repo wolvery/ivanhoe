@@ -37,7 +37,7 @@ public class DiscussionMgr implements IMessageHandler
    public void sendEntryToPlayer(UserProxy player)
    {
       SimpleLogger.logInfo("Sending discussion to " + player.getID());
-      DiscussionMapper mapper = new DiscussionMapper(this.game.getId());
+      DiscussionMapper mapper = new DiscussionMapper(this.game.getGameId());
          
       try
       {
@@ -75,7 +75,7 @@ public class DiscussionMgr implements IMessageHandler
           return;
       }
       
-      DiscussionMapper mapper = new DiscussionMapper( this.game.getId() );
+      DiscussionMapper mapper = new DiscussionMapper( this.game.getGameId() );
       if (mapper.insert( msg.getEntry() ))
       {
          SimpleLogger.logInfo("Successful discussion entry from " + msg.getSender());

@@ -8,10 +8,12 @@ package edu.virginia.speclab.ivanhoe.server;
 
 import java.util.*;
 
+import edu.virginia.speclab.ivanhoe.server.game.UserProxy;
 import edu.virginia.speclab.ivanhoe.shared.*;
+import edu.virginia.speclab.ivanhoe.shared.data.Role;
 import edu.virginia.speclab.ivanhoe.shared.message.*;
 
-public class ProxyMgr implements IDisconnectListener
+public class ProxyMgr implements IDisconnectListener 
 {
    private List proxies;
    
@@ -24,14 +26,16 @@ public class ProxyMgr implements IDisconnectListener
     * Send a message to every proxy currently managed
     * @param msg
     */
-   public void broadcastMessage( Message msg)
+   public void broadcastMessage( Message msg )
    {
       synchronized ( this.proxies ) {
           for (Iterator itr = this.proxies.iterator(); itr.hasNext(); )
           {
              // send the message to each
-             AbstractProxy proxy = (AbstractProxy)itr.next();
-             proxy.sendMessage(msg);
+             UserProxy proxy = (UserProxy)itr.next();
+             if( proxy.getGameID() == msg.getGameID() ) {
+                 proxy.sendMessage(msg);            	 
+             }
           }
       }
    }
@@ -41,17 +45,18 @@ public class ProxyMgr implements IDisconnectListener
     * @param skipName The name of the proxy to skip
     * @param msg Message to broadcast
     */
-   public void broadcastMessageToOthers( 
-      String skipName, Message msg)
+   public void broadcastMessageToOthers( String skipName, Message msg )
    {
       synchronized ( this.proxies ) {
           for (Iterator itr = this.proxies.iterator(); itr.hasNext(); )
           {
              // send the message to each
-             AbstractProxy proxy = (AbstractProxy)itr.next();
+             UserProxy proxy = (UserProxy)itr.next();
              if (proxy.getID().equals(skipName) == false)
              {
-                proxy.sendMessage(msg);
+            	 if( proxy.getGameID() == msg.getGameID() ) {
+                     proxy.sendMessage(msg);            	 
+                 }
              }
           }
       }
@@ -72,7 +77,7 @@ public class ProxyMgr implements IDisconnectListener
           for (Iterator itr = this.proxies.iterator(); itr.hasNext(); )
           {
              // send the message to each
-             AbstractProxy proxy = (AbstractProxy)itr.next();
+             UserProxy proxy = (UserProxy)itr.next();
              if ( proxy != null && proxy.getID().equals(targetName)  )
              {
                 success = proxy.sendMessage(msg);
@@ -89,15 +94,17 @@ public class ProxyMgr implements IDisconnectListener
     * Get a list of names that are currently managed
     * @return the list of names
     */
-   public List getNames()
+   public List getNames(int gameID)
    {
       List list = new ArrayList();
       synchronized ( this.proxies ) {
           for (Iterator itr = this.proxies.iterator(); itr.hasNext(); )
           {
              // send the message to each
-             AbstractProxy proxy = (AbstractProxy)itr.next();
-             list.add(proxy.getID());
+             UserProxy proxy = (UserProxy)itr.next();
+             if( proxy.getGameID() == gameID ) {
+                 list.add(proxy.getID());
+             }
           }
       }
       
@@ -109,13 +116,13 @@ public class ProxyMgr implements IDisconnectListener
     * @param proxyName
     * @return true if proxy is managed, false otherwise
     */
-   public AbstractProxy getProxyByName(String proxyName)
+   public UserProxy getProxyByName(String proxyName)
    {
-      AbstractProxy proxy = null;
+	  UserProxy proxy = null;
       synchronized ( this.proxies ) {
           for (Iterator itr = this.proxies.iterator(); itr.hasNext();)
           {
-             AbstractProxy testProxy = (AbstractProxy)itr.next();
+        	  UserProxy testProxy = (UserProxy)itr.next();
              if (testProxy.getID().equals(proxyName))
              {
                 proxy = testProxy;
@@ -126,12 +133,34 @@ public class ProxyMgr implements IDisconnectListener
       return proxy;
    }
    
+   public void notifyDisconnect( AbstractProxy proxy)
+   {
+       if( proxy instanceof UserProxy )
+       {
+           UserProxy userProxy = (UserProxy) proxy;
+           RoleLeftMsg roleLeftMessage = new RoleLeftMsg();
+           
+           Role role = userProxy.getCurrentRole();            
+           if( role != null )
+           {
+               roleLeftMessage.setRoleName(role.getName());
+               roleLeftMessage.setGameID(userProxy.getGameID());
+               broadcastMessage(roleLeftMessage);
+           }
+           
+           SimpleLogger.logInfo("Proxy [" + proxy.getID() + 
+    	   "] has disconnected; removing from manager");
+    	   proxy.unregisterDisconnectHandler(this);
+    	   removeProxy(userProxy);  
+       }    
+    }
+   
    /**
     * Add a new proxy to the manager. If a proxy with the same name 
     * already exists, it will be replaced by the new proxy.
     * @param proxy
     */
-   public boolean addProxy(AbstractProxy proxy)
+   public boolean addProxy(UserProxy proxy)
    {
       if ( proxy == null )
       {
@@ -139,7 +168,7 @@ public class ProxyMgr implements IDisconnectListener
          return false;  
       }
       
-      AbstractProxy existingProxy = getProxyByName(proxy.getID());
+      UserProxy existingProxy = getProxyByName(proxy.getID());
       if ( existingProxy != null)
       {
          SimpleLogger.logInfo("Proxy [" + proxy.getID() +
@@ -163,7 +192,7 @@ public class ProxyMgr implements IDisconnectListener
     * @param proxy
     * @return true if proxy was successfully removed, false otherwise
     */
-   public boolean removeProxy(AbstractProxy proxy)
+   public boolean removeProxy(UserProxy proxy)
    { 
       if (proxy == null)
       {
@@ -194,44 +223,49 @@ public class ProxyMgr implements IDisconnectListener
    /**
     * Disconnect all proxies and clear the managed list
     */
-   public synchronized void removeAllProxies()
+   public synchronized void removeAllProxies(int gameID)
    {
       SimpleLogger.logInfo("Removing all proxies");
       
       synchronized ( this.proxies ) {
           for (Iterator itr = this.proxies.iterator(); itr.hasNext();)
           {
-             AbstractProxy proxy = (AbstractProxy)itr.next();
-             proxy.unregisterDisconnectHandler(this);
-             SimpleLogger.logInfo("   Removing [" + proxy.getID() + "]");
-             if (proxy.isConnected())
-             {
-                SimpleLogger.logInfo("   Disconnect required");
-                proxy.disconnect();
+             UserProxy proxy = (UserProxy)itr.next();
+             
+             if( gameID == proxy.getGameID() ) {
+	              proxy.unregisterDisconnectHandler(this);
+	             SimpleLogger.logInfo("   Removing [" + proxy.getID() + "]");
+	             if (proxy.isConnected())
+	             {
+	                SimpleLogger.logInfo("   Disconnect required");
+	                proxy.disconnect();
+	             }
              }
           }
       }
       
+      //TODO this is wrong
       this.proxies.clear();
    }
 
-   /**
-    * Notification that a managed proxy has disconnected
-    */
-   public void notifyDisconnect(AbstractProxy proxy)
-   {
-      SimpleLogger.logInfo("Proxy [" + proxy.getID() + 
-         "] has disconnected; removing from manager");
-      proxy.unregisterDisconnectHandler(this);
-      removeProxy(proxy);      
-   }
 
    /**
     * Get number of proxies in the manager
     * @return
     */
-   public int getNumProxies()
+   public int getNumProxies(int gameID)
    {
-      return this.proxies.size();
+	  int count = 0;
+      synchronized ( this.proxies ) {
+          for (Iterator itr = this.proxies.iterator(); itr.hasNext();)
+          {
+        	  UserProxy testProxy = (UserProxy)itr.next();
+             if (testProxy.getGameID()==gameID)
+             {
+            	 count++;
+             }
+          }
+      }
+      return count;
    }
 }
