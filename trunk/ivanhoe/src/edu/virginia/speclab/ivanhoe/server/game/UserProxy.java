@@ -30,27 +30,12 @@ public class UserProxy extends AbstractProxy
    private Role			currentRole;
    private Authenticator authenticator;
    
-   public UserProxy(String authorizedName, AbstractProxy authProxy, int gameId) 
-      throws MapperException
+   public UserProxy() 
+   	throws MapperException
    {
-      super(authProxy);
-     
-      this.authenticator = new Authenticator();
-      
-      // save the of of the game this user is playing in
-      this.gameId = gameId;
-     
-      // get user data
-      this.userData = UserMapper.getByName(authorizedName);
-      SimpleLogger.logInfo("Successfully loaded [" + 
-         this.userData.toString() + "");
-      
-      // init journal files
-      this.journalFile = new File(this.getID() + "-game" + 
-         this.gameId + "-journal.html");
-      this.tempFile = new File(this.getID() + "-game" + 
-         this.gameId + "-scratch.html");
-   }
+	   // used to authenticate incoming messages
+	   this.authenticator = new Authenticator();
+	}
    
    /**
     * Get the identity of this proxy
@@ -65,6 +50,10 @@ public class UserProxy extends AbstractProxy
  
       SimpleLogger.logError("Requesting ID of proxy with invalid user data");
       return "Undefined";
+   }
+   
+   public int getGameID() {
+	   return this.gameId;
    }
    
    public Role getCurrentRole()
@@ -86,12 +75,34 @@ public class UserProxy extends AbstractProxy
    {
       SimpleLogger.logInfo("UserProxy [" + getID() +
             "] got [" + msg.toString() + "]" );
+         
       
       // first authenticate the sender of this message, drop it if auth fails.
       if( this.authenticator.performAuthentication(msg.getSender(), msg.getPassword(), true).length() != 0 ) {
+    	  disconnect();
     	  return;
       }
-  
+    
+      // save the of of the game this user is playing in
+	   this.gameId = msg.getGameID();
+	  
+	   // get user data
+	   try {
+		   this.userData = UserMapper.getByName(msg.getSender());
+		   SimpleLogger.logInfo("Successfully loaded [" + 
+		      this.userData.toString() + "");
+		   
+		   // init journal files
+		   this.journalFile = new File(this.getID() + "-game" + 
+		      this.gameId + "-journal.html");
+		   this.tempFile = new File(this.getID() + "-game" + 
+		      this.gameId + "-scratch.html");
+	   }
+	   catch( MapperException e ) {
+		   disconnect();
+		   return;
+	   }
+	  
       try
       {
           // user proxy gets first shot at handling incomming msgs

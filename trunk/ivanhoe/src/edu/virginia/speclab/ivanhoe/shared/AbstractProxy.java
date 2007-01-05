@@ -215,7 +215,7 @@ public abstract class AbstractProxy implements Runnable
       
       SimpleLogger.logInfo("Proxy [" + getID() + "] sending message [" +
          msg.toString() + "]");
-         
+       
       try
       {
          this.commEndpoint.sendMessage(msg);

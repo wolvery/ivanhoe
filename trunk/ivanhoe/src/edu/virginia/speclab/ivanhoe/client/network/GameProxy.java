@@ -11,6 +11,7 @@ import edu.virginia.speclab.ivanhoe.shared.IMessageHandler;
 import edu.virginia.speclab.ivanhoe.shared.SimpleLogger;
 import edu.virginia.speclab.ivanhoe.shared.message.DocumentRequestMsg;
 import edu.virginia.speclab.ivanhoe.shared.message.LoginMsg;
+import edu.virginia.speclab.ivanhoe.shared.message.Message;
 import edu.virginia.speclab.ivanhoe.shared.message.MessageType;
 
 /**
@@ -19,11 +20,12 @@ import edu.virginia.speclab.ivanhoe.shared.message.MessageType;
 public class GameProxy extends ClientProxy
 {
     private LinkedList gameProxyListeners;
+    private int gameID;
 
-    public GameProxy(String userName, String password)
+    public GameProxy(String userName, String password, int gameID)
     {
         super(userName, password);
-        
+        this.gameID = gameID;
         gameProxyListeners = new LinkedList();
     }
 
@@ -72,6 +74,11 @@ public class GameProxy extends ClientProxy
                 i.remove();
             }
         }
+    }
+    
+    public boolean sendMessage(Message msg) {
+    	msg.setGameID(this.gameID);
+    	return super.sendMessage(msg);
     }
     
     /**

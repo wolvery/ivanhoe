@@ -44,11 +44,11 @@ public class LoginTransaction implements IMessageHandler
     /**
      * Sends login credentials to the server
      */
-    public boolean login( String userName, String password )
+    public boolean login( String userName, String password, int gameID )
     {
         SimpleLogger.logInfo("Connecting to "+lobbyHost+":"+lobbyPort);
 
-        GameProxy gameProxy = new GameProxy(userName, password); 
+        GameProxy gameProxy = new GameProxy(userName, password, gameID); 
         Ivanhoe.setProxy(gameProxy);
 
         Ivanhoe.getProxy().registerMsgHandler(MessageType.GAME_INFO, this);

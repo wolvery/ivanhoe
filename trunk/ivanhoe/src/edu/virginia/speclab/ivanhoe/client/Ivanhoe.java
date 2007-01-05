@@ -16,7 +16,6 @@ import edu.virginia.speclab.ivanhoe.client.game.view.Workspace;
 import edu.virginia.speclab.ivanhoe.client.network.ClientProxy;
 import edu.virginia.speclab.ivanhoe.client.network.GameProxy;
 import edu.virginia.speclab.ivanhoe.client.network.LobbyProxy;
-import edu.virginia.speclab.ivanhoe.client.pregame.LoginDialog;
 import edu.virginia.speclab.ivanhoe.client.pregame.LoginTransaction;
 import edu.virginia.speclab.ivanhoe.client.pregame.LoginTransactionListener;
 import edu.virginia.speclab.ivanhoe.client.util.PropertiesManager;
@@ -139,7 +138,7 @@ public class Ivanhoe
        }
    }
    
-   private void startApplication( String userName, String password )
+   private void startApplication( String userName, String password, int gameID )
    {
        // init game properties from file
        if (loadProperties() == false)
@@ -148,7 +147,7 @@ public class Ivanhoe
           shutdown();
        }
        
-       AutoLogin autoLog = new AutoLogin(userName,password);
+       AutoLogin autoLog = new AutoLogin(userName,password,gameID);
        
        if( autoLog.isSuccessful() )
        {
@@ -335,8 +334,8 @@ public class Ivanhoe
       Ivanhoe ivanhoe = new Ivanhoe();
       
       // start the application
-      if( args.length == 2 ) {
-          ivanhoe.startApplication(args[0],args[1]);    	  
+      if( args.length == 3 ) {
+          ivanhoe.startApplication(args[0],args[1],Integer.parseInt(args[2]));    	  
       }
    }
   
@@ -450,7 +449,7 @@ public class Ivanhoe
         private boolean success;
         private Semaphore semaphore;
         
-        public AutoLogin( String username, String clearPassword )
+        public AutoLogin( String username, String clearPassword, int gameID )
         {
             success = false;
             semaphore = new Semaphore();
@@ -460,7 +459,7 @@ public class Ivanhoe
             
             String userName = username;
             String encryptedPassword = Encryption.createMD5HashCode(clearPassword);            
-            loginTransaction.login(userName,encryptedPassword);            
+            loginTransaction.login(userName,encryptedPassword,gameID);            
 
             // wait here till semaphore is raised by callback
             semaphore.waitHere();
