@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<!-- JNLP File for Ivanhoe --> 
+<jnlp 
+  spec="1.0+" 
+  codebase="http://localhost:3000/Ivanhoe4500"
+  href="ivanhoe.jnlp">
+  <information> 
+    <title>Ivanhoe Game</title>
+    <vendor>Applied Research in Patacriticism</vendor> 
+    <homepage href="docs/help.html"/> 
+    <description>A literary game</description> 
+    <description kind="short">A literary game</description> 
+    <icon href="../images/ivan.gif" kind="splash"/> 
+    <offline-allowed/> 
+  </information> 
+  <security>
+    <all-permissions/> 
+  </security>
+  <resources> 
+    <j2se version="1.4+"/> 
+    <jar href="lib/ivanhoe-client.jar"/> 
+    <jar href="lib/MRJAdapter.jar"/>
+    <jar href="lib/kunststoff.jar"/>
+    <jar href="lib/resources.jar"/>
+    <jar href="lib/Tidy.jar"/>
+    <jar href="lib/log4j-1.2.8.jar"/>
+    <extension href="ivanhoe-javahelp.jnlp"/>
+    <extension href="ivanhoe-rachel.jnlp"/>
+  </resources> 
+  <application-desc main-class="edu.virginia.speclab.ivanhoe.client.Ivanhoe">
+  	<argument>nick</argument>
+  	<argument>nick</argument>
+  	<argument><%= @game.id %></argument> 
+  </application-desc>
+</jnlp> 
+
