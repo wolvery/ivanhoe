@@ -2,7 +2,7 @@
 
 <h1 class="left-element style1">Ivanhoe Games</h1>
 
-<p class="left-element style1">The following is a list of the currently active Ivanhoe Games.</p>
+<p class="left-element style1">The following games are currently active:</p>
 
 <table class="left-element style1">
   <tr>
@@ -12,6 +12,7 @@
   <tr>
     <td><a href="games/show/<%= game.id %>"><%= game.name %></a></td>
     <td><a href="games/launch/<%= game.id %>.jnlp">play</a></td>
+    <td><a href="games/destroy/<%= game.id %>">delete</a></td>
   </tr>
 <% end %>
 </table>
