@@ -5,7 +5,7 @@ class AccountController < ApplicationController
   def login
     case @request.method
       when :post
-        if @session['user'] = Player.authenticate(@params['user_login'], @params['user_password'])
+        if session['user'] = Player.authenticate(@params['user_login'], @params['user_password'])
 
           flash['notice']  = "Login successful"
           redirect_back_or_default :action => "welcome"
@@ -22,7 +22,7 @@ class AccountController < ApplicationController
         @user = User.new(@params['user'])
         
         if @user.save      
-          @session['user'] = Player.authenticate(@user.login, @params['user']['password'])
+          session['user'] = Player.authenticate(@user.login, @params['user']['password'])
           flash['notice']  = "Signup successful"
           redirect_back_or_default :action => "welcome"          
         end
@@ -32,7 +32,7 @@ class AccountController < ApplicationController
   end  
   
   def delete
-    if @params['id'] and @session['user']
+    if @params['id'] and session['user']
       @user = Player.find(@params['id'])
       @user.destroy
     end
@@ -40,7 +40,7 @@ class AccountController < ApplicationController
   end  
     
   def logout
-    @session['user'] = nil
+    session['user'] = nil
   end
     
   def welcome
