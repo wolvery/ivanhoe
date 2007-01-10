@@ -24,8 +24,8 @@ class Player < ActiveRecord::Base
     write_attribute("password", self.class.md5(password))
   end
 
-  #validates_length_of :playername, :within => 3..40
-  #validates_length_of :password, :within => 5..40
+  validates_length_of :playername, :within => 1..40
+  validates_length_of :password, :within => 1..40
   validates_presence_of :playername, :password, :password_confirmation
   validates_uniqueness_of :playername, :on => :create
   validates_confirmation_of :password, :on => :create     
