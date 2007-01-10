@@ -1,30 +1,29 @@
 class AccountController < ApplicationController
-  model   :player
-  layout  'scaffold'
+  layout  'main_frame'
 
   def login
-    case @request.method
+    case request.method
       when :post
-        if session['user'] = Player.authenticate(@params['user_login'], @params['user_password'])
+        if session['user'] = Player.authenticate(params['user']['login'], params['user']['password'])
 
           flash['notice']  = "Login successful"
-          redirect_back_or_default :action => "welcome"
+          redirect_back_or_default :controller => "games", :action => "index"
         else
-          @login    = @params['user_login']
+          @login    = params['user_login']
           @message  = "Login unsuccessful"
       end
     end
   end
   
   def signup
-    case @request.method
+    case request.method
       when :post
-        @user = User.new(@params['user'])
+        @user = User.new(params['user'])
         
         if @user.save      
-          session['user'] = Player.authenticate(@user.login, @params['user']['password'])
+          session['user'] = Player.authenticate(@user.login, params['user']['password'])
           flash['notice']  = "Signup successful"
-          redirect_back_or_default :action => "welcome"          
+          redirect_back_or_default :controller => "games", :action => "index"          
         end
       when :get
         @user = User.new
@@ -32,18 +31,16 @@ class AccountController < ApplicationController
   end  
   
   def delete
-    if @params['id'] and session['user']
-      @user = Player.find(@params['id'])
+    if params['id'] and session['user']
+      @user = Player.find(params['id'])
       @user.destroy
     end
-    redirect_back_or_default :action => "welcome"
+    redirect_back_or_default :controller => "games", :action => "index"
   end  
     
   def logout
     session['user'] = nil
-  end
-    
-  def welcome
+    redirect_back_or_default :controller => "games", :action => "index"
   end
   
 end

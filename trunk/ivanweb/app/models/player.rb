@@ -5,7 +5,7 @@ class Player < ActiveRecord::Base
   set_table_name "player"  
  
   def self.authenticate(login, pass)
-    find_first(["playername = ? AND password = ?", login, md5(pass)])
+    find( :first, :conditions => ["playername = ? AND password = ?", login, md5(pass)])
   end  
 
   def change_password(pass)
