@@ -4,7 +4,7 @@
 
 <p class="left-element style1"><%= @game.description %></p>
 
-<h1 class="left-element style1">Objective</h2>
+<h1 class="left-element style1">Objectives</h2>
 <p class="left-element style1"><%= @game.objectives %></p>
 
 <% if @game.private then %>
@@ -14,6 +14,22 @@
 <% if @game.restricted then %>
     <p class="left-element style1">This game has a guest list.</p>
 <% end %>
+
+
+<h1 class="left-element style1">Player List</h1>
+<ul class="left-element style1">
+<% for player in @players %>
+    <li><%= player.playername %></li>
+<% end %>
+</ul>
+
+<h1 class="left-element style1">Role List</h1>
+<ul class="left-element style1">
+<% for role in @roles %>
+    <li><%= role.name %></li>
+<% end %>
+</ul>
+
 
 <a href="/games/launch/<%= @game.id %>.jnlp">play</a>
 

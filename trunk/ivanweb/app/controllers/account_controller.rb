@@ -22,7 +22,7 @@ class AccountController < ApplicationController
         @user = User.new(@params['user'])
         
         if @user.save      
-          @session['user'] = User.authenticate(@user.login, @params['user']['password'])
+          @session['user'] = Player.authenticate(@user.login, @params['user']['password'])
           flash['notice']  = "Signup successful"
           redirect_back_or_default :action => "welcome"          
         end

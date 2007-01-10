@@ -1,11 +1,15 @@
-<h1>New game</h1>
+<h1 class="left-element style1">Create a New Ivanhoe Game</h1>
 
 <%= error_messages_for :game %>
 
 <% form_for(:game, :url => games_path) do |f| %>
-  <p>
-    <%= submit_tag "Create" %>
-  </p>
+   <p class="left-element style1">Game Title<br/><%= f.text_field 'name' %></p>
+   <p class="left-element style1">Description<%= f.text_area 'description' %></p>
+   <p class="left-element style1">Objectives<%= f.text_area 'objectives' %></p>
+   
+   <p class="left-element style1"><%= f.check_box 'private' %> Private</p>
+   <p class="left-element style1"><%= f.check_box 'restricted' %> Restricted</p>
+      
+   <p class="left-element style1">Starting Document Weight<br/><%= f.text_field 'startDocWeight' %></p>   
+   <p class="left-element style1"><%= submit_tag "Create" %></p>
 <% end %>
-
-<%= link_to 'Back', games_path %>
