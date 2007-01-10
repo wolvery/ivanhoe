@@ -1,22 +1,23 @@
-<%= start_form_tag :action=> "login" %>
+
+<% form_for :user, :url => { :action=>'login', :id => @user } do |f| %>
 
 <div title="Account login" id="loginform" class="form">
-    <h3>Please login</h3>
+    <h3>Please enter your account information.  </h3>
     
     <% if @message %>
       <div id="message"><%= @message %></div>
     <% end %>
 
-    <label for="user_login">Login:</label><br/>
-    <input type="text" name="user_login" id="user_login" size="30" value=""/><br/>
+    <label for="user_login">Username:</label><br/>
+    <%= f.text_field 'login' %><br/>
 
     <label for="user_password">Password:</label><br/>
-    <input type="password" name="user_password" id="user_password" size="30"/>
+    <%= f.password_field 'password' %>
 
     <br/>
-    <input type="submit" name="login" value="Login &#187;" class="primary" />
+    <%= submit_tag 'login' %>
 
 </div>
 
-<%= end_form_tag %>
+<% end %>
 
