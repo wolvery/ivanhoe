@@ -46,14 +46,10 @@ public class GameActionToolbar extends BlackBox
 
    public GameActionToolbar( IvanhoeGame ivanhoeGame, IvanhoeFrame frame )
    {      
-      super(BoxLayout.X_AXIS);
+      super(BoxLayout.Y_AXIS);
 
       // add all the buttons
       
-      addButton(new ExitAction());
-
-      addSeperator();
-
       AddDocAction addDocAction = new AddDocAction(ivanhoeGame.getDiscourseField(),
               									   ivanhoeGame.getRoleManager(), 
                                                    frame );
@@ -97,6 +93,9 @@ public class GameActionToolbar extends BlackBox
 
       HelpAction helpAction = new HelpAction("help",ResourceHelper.instance.getIcon("res/icons/help.jpg"));
       addButton(helpAction);
+
+      addButton(new ExitAction());
+
 
 //      add(Box.createRigidArea(new Dimension(1,15)));
 //      
