@@ -28,8 +28,8 @@
     <extension href="ivanhoe-rachel.jnlp"/>
   </resources> 
   <application-desc main-class="edu.virginia.speclab.ivanhoe.client.Ivanhoe">
-  	<argument>nick</argument>
-  	<argument>nick</argument>
+  	<argument><%= session['user'].playername %></argument>
+  	<argument><%= session['user'].password %></argument>
   	<argument><%= @game.id %></argument> 
   </application-desc>
 </jnlp> 
