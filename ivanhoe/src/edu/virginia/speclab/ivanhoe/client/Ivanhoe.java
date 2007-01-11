@@ -449,7 +449,7 @@ public class Ivanhoe
         private boolean success;
         private Semaphore semaphore;
         
-        public AutoLogin( String username, String clearPassword, int gameID )
+        public AutoLogin( String username, String password, int gameID )
         {
             success = false;
             semaphore = new Semaphore();
@@ -458,8 +458,7 @@ public class Ivanhoe
             loginTransaction.setListener(this);
             
             String userName = username;
-            String encryptedPassword = Encryption.createMD5HashCode(clearPassword);            
-            loginTransaction.login(userName,encryptedPassword,gameID);            
+            loginTransaction.login(userName,password,gameID);            
 
             // wait here till semaphore is raised by callback
             semaphore.waitHere();
