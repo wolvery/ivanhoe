@@ -57,7 +57,7 @@ class GamesController < ApplicationController
     keyspace.save
     
     # the current user is the creator of this game
-    @game.fk_creator_id = sessions['user'].id
+    @game.fk_creator_id = session['user'].id
     
     respond_to do |format|
       if @game.save
