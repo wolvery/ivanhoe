@@ -9,15 +9,9 @@
       <div id="message"><%= @message %></div>
     <% end %>
 
-    <label for="user_login">Username:</label><br/>
-    <%= f.text_field 'login' %><br/>
-
-    <label for="user_password">Password:</label><br/>
-    <%= f.password_field 'password' %>
-
-    <p>
-    <%= submit_tag 'login' %>
-    </p>
+    <p><label class="form-label" for="user_login">Username:</label><%= f.text_field 'login' %></p>
+    <p><label class="form-label" for="user_password">Password:</label><%= f.password_field 'password' %></p>
+    <p><%= submit_tag 'login' %></p>
     
 </div>
 

@@ -1,6 +1,12 @@
 class PlayersController < ApplicationController
 
+  before_filter :admin, :except => :show
+
   layout "main_frame"
+  
+  def admin
+    (session['user'] and session['user'].admin)
+  end
 
   # GET /players
   # GET /players.xml
@@ -24,37 +30,16 @@ class PlayersController < ApplicationController
     end
   end
 
-  # GET /players/new
-  def new
-    @player = Player.new
-  end
-
   # GET /players/1;edit
   def edit
     @player = Player.find(params[:id])
-  end
-
-  # POST /players
-  # POST /players.xml
-  def create
-    @player = Player.new(params[:player])
-
-    respond_to do |format|
-      if @player.save
-        flash[:notice] = 'Player was successfully created.'
-        format.html { redirect_to player_url(@player) }
-        format.xml  { head :created, :location => player_url(@player) }
-      else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @player.errors.to_xml }
-      end
-    end
   end
 
   # PUT /players/1
   # PUT /players/1.xml
   def update
     @player = Player.find(params[:id])
+    @player.password_confirmation = @player.password
 
     respond_to do |format|
       if @player.update_attributes(params[:player])
@@ -72,6 +57,7 @@ class PlayersController < ApplicationController
   # DELETE /players/1.xml
   def destroy
     @player = Player.find(params[:id])
+    @player.password_confirmation = @player.password
     @player.destroy
 
     respond_to do |format|

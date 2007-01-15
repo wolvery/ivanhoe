@@ -3,6 +3,11 @@ class GamesController < ApplicationController
   layout "main_frame"
   
   before_filter :login_required, :except => [ :index, :show ]
+  before_filter :game_create_permission, :only => [ :new, :create, :edit, :update ]
+
+  def game_create_permission
+    (session['user'] and session['user'].new_game_permission)
+  end
 
   # GET /games
   # GET /games.xml

@@ -18,7 +18,7 @@ class AccountController < ApplicationController
   def signup
     case request.method
       when :post
-        @user = User.new(params['user'])
+        @user = Player.new(params['user'])
         
         if @user.save      
           session['user'] = Player.authenticate(@user.login, params['user']['password'])
@@ -26,7 +26,7 @@ class AccountController < ApplicationController
           redirect_back_or_default :controller => "games", :action => "index"          
         end
       when :get
-        @user = User.new
+        @user = Player.new
     end      
   end  
   
