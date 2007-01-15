@@ -1,22 +1,19 @@
-<%= start_form_tag :action=> "signup" %>
+<h2>Create Account</h2>
 
 <div title="Account signup" id="signupform" class="form">
-  <h3>Signup</h3>
-  <%= error_messages_for 'user' %><br/>
-  
-  <label for="user_login">Desired login:</label><br/>
-  <%= text_field "user", "login", :size => 30 %><br/>
-  <label for="user_password">Choose password:</label><br/>
-  <%= password_field "user", "password", :size => 30 %><br/>
-  <label for="user_password_confirmation">Confirm password:</label><br/>
-  <%= password_field "user", "password_confirmation", :size => 30 %><br/>
-  
-<p><label class="form-label" for="user_fname">First Name:</label><%= text_field 'user', 'fname' %></p>
-<p><label class="form-label" for="user_lname">Last Name:</label><%= text_field 'user', 'lname' %></p>
-<p><label class="form-label" for="user_email">E-mail:</label><%= text_field 'user', 'email' %></p>
-<p><label class="form-label" for="user_affiliation">Affiliation:</label><%= text_field 'user', 'affiliation' %></p>
 
-<input type="submit" value="Signup &#187;" class="primary" />
-
-<%= end_form_tag %>
-
+    <%= start_form_tag :action=> "signup" %>
+    
+    <p><%= error_messages_for 'user' %></p>
+      
+    <p><label class="form-label" for="user_playername">Player Name:</label><%= text_field "user", "playername", :size => 30 %></p>
+    <p><label class="form-label" for="user_password">Choose password:</label><%= password_field "user", "password", :size => 30 %></p>
+    <p><label class="form-label" for="user_password_confirmation">Confirm password:</label><%= password_field "user", "password_confirmation", :size => 30 %></p>
+    <p><label class="form-label" for="user_fname">First Name:</label><%= text_field 'user', 'fname' %></p>
+    <p><label class="form-label" for="user_lname">Last Name:</label><%= text_field 'user', 'lname' %></p>
+    <p><label class="form-label" for="user_email">E-mail:</label><%= text_field 'user', 'email' %></p>
+    <p><label class="form-label" for="user_affiliation">Affiliation:</label><%= text_field 'user', 'affiliation' %></p>
+    <p><input type="submit" value="Signup &#187;" class="primary" /></p>
+    
+    <%= end_form_tag %>
+</div>
