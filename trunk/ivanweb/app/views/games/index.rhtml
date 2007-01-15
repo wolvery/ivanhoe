@@ -1,22 +1,20 @@
 <div id="bodytext">
 
-<h1 >Ivanhoe Games</h1>
+<h2>Games</h2>
 
 <p >The following games are currently active:</p>
 
-<table >
-  <tr>
-  </tr>
-  
+<table id="game-list">
+  <tr/>
 <% for game in @games %>
-  <tr>
+  <tr class="game-list-row">
     <td><a href="games/show/<%= game.id %>"><%= game.name %></a></td>
-    <td><a href="games/launch/<%= game.id %>.jnlp">play</a></td>
-    <td><a href="games/destroy/<%= game.id %>">delete</a></td>
+    <td><a href="games/launch/<%= game.id %>.jnlp">Play</a></td>
+    <td><%= link_to 'Delete', game_path(game), :confirm => 'Are you sure?', :method => :delete %></td>
   </tr>
 <% end %>
 </table>
 
-<p ><a href="games/new">create a new game</a></p>
+<p><a href="games/new">create a new game</a></p>
   
 </div>

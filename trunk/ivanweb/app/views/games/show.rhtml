@@ -1,10 +1,10 @@
 
 <div id="bodytext">
-<h1 ><%= @game.name %></h1>
+<h2><%= @game.name %></h2>
 
 <p ><%= @game.description %></p>
 
-<h1 >Objectives</h2>
+<h3>Objectives</h3>
 <p ><%= @game.objectives %></p>
 
 <% if @game.private then %>
@@ -15,15 +15,14 @@
     <p >This game has a guest list.</p>
 <% end %>
 
-
-<h1 >Player List</h1>
+<h3>Player List</h3>
 <ul >
 <% for player in @players %>
-    <li><%= player.playername %></li>
+    <li><a href="/players/<%=player.id%>"><%= player.playername %></a></li>
 <% end %>
 </ul>
 
-<h1 >Role List</h1>
+<h3>Role List</h3>
 <ul >
 <% for role in @roles %>
     <li><%= role.name %></li>

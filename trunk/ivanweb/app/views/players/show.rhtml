@@ -1,0 +1,9 @@
+<h2>Player Information</h2>
+
+<p>Player Name: <%= @player.playername %></p>
+<p>First Name: <%= @player.fname %></p>
+<p>Last Name: <%= @player.lname %></p>
+<p>E-mail: <%= @player.email %></p>
+<p>Affiliation: <%= @player.affiliation %></p>
+
+<%= link_to 'Edit', edit_player_path(@player) %>

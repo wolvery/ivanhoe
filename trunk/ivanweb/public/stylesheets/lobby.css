@@ -3,3 +3,15 @@
     float: right;
     clear: both;
 }
+
+#game-list {
+    width: 80%;
+}
+
+.game-list-row {
+    width: 80%;
+}
+
+.form-label {
+    width: 30%;
+}
