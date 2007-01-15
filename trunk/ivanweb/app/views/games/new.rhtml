@@ -1,8 +1,8 @@
-<h1 class="left-element style1">Create a New Ivanhoe Game</h1>
+<h1 >Create a New Ivanhoe Game</h1>
 
 <%= error_messages_for :game %>
 
 <% form_for(:game, :url => games_path) do |f| %>
    <%= render :partial => "form", :locals => { :form => f } %>
-   <p class="left-element style1"><%= submit_tag "Create" %></p>
+   <p ><%= submit_tag "Create" %></p>
 <% end %>
