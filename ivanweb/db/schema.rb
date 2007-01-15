@@ -2,7 +2,7 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 1) do
+ActiveRecord::Schema.define(:version => 2) do
 
   create_table "action", :force => true do |t|
     t.column "fk_type",            :integer,               :default => 0, :null => false
@@ -93,7 +93,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.column "startDocWeight", :integer,               :default => 1
   end
 
-  create_table "keyspace", :id => false, :force => true do |t|
+  create_table "keyspace", :force => true do |t|
     t.column "tablename",  :string,  :limit => 40, :default => "", :null => false
     t.column "next_value", :integer,               :default => 0,  :null => false
   end

@@ -1,30 +1,30 @@
 
 <div id="bodytext">
-<h1 class="left-element style1"><%= @game.name %></h1>
+<h1 ><%= @game.name %></h1>
 
-<p class="left-element style1"><%= @game.description %></p>
+<p ><%= @game.description %></p>
 
-<h1 class="left-element style1">Objectives</h2>
-<p class="left-element style1"><%= @game.objectives %></p>
+<h1 >Objectives</h2>
+<p ><%= @game.objectives %></p>
 
 <% if @game.private then %>
-    <p class="left-element style1">This game is private.</p>
+    <p >This game is private.</p>
 <% end %>
 
 <% if @game.restricted then %>
-    <p class="left-element style1">This game has a guest list.</p>
+    <p >This game has a guest list.</p>
 <% end %>
 
 
-<h1 class="left-element style1">Player List</h1>
-<ul class="left-element style1">
+<h1 >Player List</h1>
+<ul >
 <% for player in @players %>
     <li><%= player.playername %></li>
 <% end %>
 </ul>
 
-<h1 class="left-element style1">Role List</h1>
-<ul class="left-element style1">
+<h1 >Role List</h1>
+<ul >
 <% for role in @roles %>
     <li><%= role.name %></li>
 <% end %>
