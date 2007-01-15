@@ -19,7 +19,7 @@
 
  <div id="account-bar" >
   <% if session['user'] %>
-    <p>You are logged in as <%= session['user'].playername %>. <%= admin_status(session['user']) %>Click <a href="/account/logout">here</a> to logout.</p>
+    <p>You are logged in as <%= session['user'].playername %>. <%= if admin then 'You are an admin. ' end %>Click <a href="/account/logout">here</a> to logout.</p>
   <% else %>
     <p>Click <a href="/account/login">here</a> to login.</p>
   <% end %>
@@ -46,7 +46,12 @@
         <li><a href="/main/demo">Demo</a></li>
         <li><a href="/games">Games</a></li>
         <li><a href="/main/help/">Help</a></li>
-        <li><a href="/players/">Admin</a></li>
+        <% if admin then %>
+            <li><a href="/players/">Admin</a></li>
+        <% end %>
+        <% if !session['user'] %>
+            <li><a href="/account/signup">Join</a></li>
+        <% end %>
 	</ul>
 
 </div><!-- /navigation -->

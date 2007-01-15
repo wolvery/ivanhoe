@@ -6,4 +6,6 @@
 <p>E-mail: <%= @player.email %></p>
 <p>Affiliation: <%= @player.affiliation %></p>
 
-<%= link_to 'Edit', edit_player_path(@player) %>
+<% if admin then %>
+    <%= link_to 'Edit', edit_player_path(@player) %>
+<% end %>

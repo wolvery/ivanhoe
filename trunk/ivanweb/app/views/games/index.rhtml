@@ -10,11 +10,14 @@
   <tr class="game-list-row">
     <td><a href="games/show/<%= game.id %>"><%= game.name %></a></td>
     <td><a href="games/launch/<%= game.id %>.jnlp">Play</a></td>
-    <td><%= link_to 'Delete', game_path(game), :confirm => 'Are you sure?', :method => :delete %></td>
+    <% if session['user'] and session['user'].admin then %>
+        <td><%= link_to 'Delete', game_path(game), :confirm => 'Are you sure?', :method => :delete %></td>
+    <% end %>
   </tr>
 <% end %>
 </table>
 
-<p><a href="games/new">create a new game</a></p>
-  
+<% if session['user'] and session['user'].new_game_permission then %>
+    <p><a href="games/new">create a new game</a></p>
+<% end %>
 </div>
