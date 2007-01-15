@@ -1,3 +1,4 @@
+<h2>Log in</h2>
 
 <% form_for :user, :url => { :action=>'login', :id => @user } do |f| %>
 
@@ -14,9 +15,10 @@
     <label for="user_password">Password:</label><br/>
     <%= f.password_field 'password' %>
 
-    <br/>
+    <p>
     <%= submit_tag 'login' %>
-
+    </p>
+    
 </div>
 
 <% end %>
