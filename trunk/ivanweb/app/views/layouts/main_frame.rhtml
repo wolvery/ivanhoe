@@ -19,7 +19,7 @@
 
  <div id="account-bar" >
   <% if session['user'] %>
-    <p>You are logged in as <%= session['user'].playername %>. <%= if admin? then 'You are an admin. ' end %>Click <a href="/account/logout">here</a> to logout.</p>
+    <p>You are logged in as <%= session['user'].playername %>. Click <a href="/account/logout">here</a> to logout.</p>
   <% else %>
     <p>Click <a href="/account/login">here</a> to login.</p>
   <% end %>
