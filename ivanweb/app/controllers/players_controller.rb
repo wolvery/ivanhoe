@@ -1,12 +1,9 @@
 class PlayersController < ApplicationController
 
-  before_filter :admin, :except => :show
+  before_filter :admin_filter, :except => :show
 
   layout "main_frame"
   
-  def admin
-    (session['user'] and session['user'].admin)
-  end
 
   # GET /players
   # GET /players.xml
@@ -65,4 +62,11 @@ class PlayersController < ApplicationController
       format.xml  { head :ok }
     end
   end
+  
+  protected
+  
+  def admin_filter
+    (session['user'] and session['user'].admin)
+  end
+  
 end

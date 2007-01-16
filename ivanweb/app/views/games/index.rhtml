@@ -2,7 +2,7 @@
 
 <h2>Games</h2>
 
-<p >The following games are currently active:</p>
+<p>The following games are currently active:</p>
 
 <table id="game-list">
   <tr/>
@@ -10,14 +10,14 @@
   <tr class="game-list-row">
     <td><a href="games/show/<%= game.id %>"><%= game.name %></a></td>
     <td><a href="games/launch/<%= game.id %>.jnlp">Play</a></td>
-    <% if session['user'] and session['user'].admin then %>
-        <td><%= link_to 'Delete', game_path(game), :confirm => 'Are you sure?', :method => :delete %></td>
+    <% if admin? then %>
+        <td><%= link_to 'Delete', game_path(game), :confirm => "Delete game \"#{game.name}\"?", :method => :delete %></td>
     <% end %>
   </tr>
 <% end %>
 </table>
 
-<% if session['user'] and session['user'].new_game_permission then %>
+<% if can_create_game? then %>
     <p><a href="games/new">create a new game</a></p>
 <% end %>
 </div>

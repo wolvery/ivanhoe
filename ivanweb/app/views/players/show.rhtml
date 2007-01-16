@@ -3,9 +3,13 @@
 <p>Player Name: <%= @player.playername %></p>
 <p>First Name: <%= @player.fname %></p>
 <p>Last Name: <%= @player.lname %></p>
-<p>E-mail: <%= @player.email %></p>
+
+<% if can_create_game? then %>
+    <p>E-mail: <%= @player.email %></p>
+<% end %>
+
 <p>Affiliation: <%= @player.affiliation %></p>
 
-<% if admin then %>
+<% if admin? then %>
     <%= link_to 'Edit', edit_player_path(@player) %>
 <% end %>

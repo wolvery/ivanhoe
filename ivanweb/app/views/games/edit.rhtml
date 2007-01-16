@@ -4,6 +4,6 @@
 
 <% form_for(:game, :url => game_path(@game), :html => { :method => :put }) do |f| %>
    <%= render :partial => "form", :locals => { :form => f } %>
-  <p class="left-element style1"><%= submit_tag "Update" %></p>
+  <p><%= submit_tag "Update" %></p>
 <% end %>
 
