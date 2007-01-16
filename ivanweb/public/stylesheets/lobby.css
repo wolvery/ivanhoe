@@ -15,3 +15,11 @@
 .form-label {
     width: 30%;
 }
+
+.form-field {
+    width: 60%;
+}
+
+.form-field-checkbox {
+    width: 15px;
+}
