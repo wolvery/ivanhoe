@@ -32,6 +32,7 @@
 
 <a href="/games/launch/<%= @game.id %>.jnlp">play</a>
 
-<a href="/games/edit/<%= @game.id %>">edit</a>
-
+<% if can_edit_game?(@game.id) then %>
+    <a href="/games/edit/<%= @game.id %>">edit</a>
+<% end %>
 </div>

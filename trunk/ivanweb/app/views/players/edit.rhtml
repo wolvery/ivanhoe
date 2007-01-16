@@ -3,7 +3,7 @@
 <%= error_messages_for :player %>
 
 <% form_for(:player, :url => player_path(@player), :html => { :method => :put }) do |form| %>
-    <p><label class="form-label" for="player_playername">Player Name:</label><%= form.text_field 'playername' %></p>
+    <p><label class="form-label" for="player_playername">Player Name:</label><%= @player.playername %></p>
     <p><label class="form-label" for="player_fname">First Name:</label><%= form.text_field 'fname' %></p>
     <p><label class="form-label" for="player_lname">Last Name:</label><%= form.text_field 'lname' %></p>
     <p><label class="form-label" for="player_email">E-mail:</label><%= form.text_field 'email' %></p>

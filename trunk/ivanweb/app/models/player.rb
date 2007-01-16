@@ -11,6 +11,11 @@ class Player < ActiveRecord::Base
   def change_password(pass)
     update_attribute "password", self.class.md5(pass)
   end
+  
+  def can_edit_game?(game_id)
+    game = Game.find(game_id)   
+    return ( game and game.fk_creator_id == @id and @new_game_permission )
+  end
     
   protected
 
