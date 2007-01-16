@@ -5,8 +5,13 @@ class JournalsController < ApplicationController
   layout "main_frame"
   
   def show
-    @journal = Journal.find(params[:id],params[:player])
-    @playername = params[:player] 
+    begin
+      @player = Player.find(params[:player_id])
+      @game = Game.find(params[:id])     
+      @journal = Journal.find(@game.id,@player.playername)
+    rescue
+      @journal = Journal.empty_journal()
+    end
   end
   
 end

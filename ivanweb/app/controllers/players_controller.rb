@@ -3,7 +3,6 @@ class PlayersController < ApplicationController
   before_filter :admin_filter, :except => :show
 
   layout "main_frame"
-  
 
   # GET /players
   # GET /players.xml

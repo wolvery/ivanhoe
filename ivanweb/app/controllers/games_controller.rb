@@ -20,8 +20,7 @@ class GamesController < ApplicationController
   def show
     @game = Game.find(params[:id])    
     @players = GamePlayerList.get_players( @game.id )
-    @roles = GamePlayerList.get_roles( @game.id )
-
+  
     respond_to do |format|
       format.html
       format.xml  { render :xml => @game.to_xml }
