@@ -7,6 +7,10 @@ class Journal
   def initialize( content )
     @contents = content
   end
+  
+  def self.empty_journal()
+    Journal.new("<p><i>No Journal Entry</i></p>")
+  end
 
   def self.find( game_id, player_name )
     
@@ -20,12 +24,12 @@ class Journal
       body.elements.each { |e| div.add e }
       contents = ""
       div.write( contents )
+      Journal.new(contents) 
     rescue
       # if the file can't be opened or parsed, return blank
-      contents = "<p><i>No Journal Entry</i></p>"
-    end
-        
-    Journal.new(contents)   
+      self.empty_journal()
+    end      
+      
   end
  
 end

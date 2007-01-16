@@ -5,10 +5,14 @@
     <%= start_form_tag :action=> "signup" %>
     
     <p><%= error_messages_for 'user' %></p>
-      
-    <p><label class="form-label" for="user_playername">Player Name:</label><%= text_field "user", "playername", :size => 30 %></p>
-    <p><label class="form-label" for="user_password">Choose password:</label><%= password_field "user", "password", :size => 30 %></p>
-    <p><label class="form-label" for="user_password_confirmation">Confirm password:</label><%= password_field "user", "password_confirmation", :size => 30 %></p>
+    
+    <h3>Account Setup</h3>
+    <p><label class="form-label" for="user_playername">Login:</label><%= text_field "user", "playername", :size => 30 %></p>
+    <p><label class="form-label" for="user_password">Password:</label><%= password_field "user", "password", :size => 30 %></p>
+    <p><label class="form-label" for="user_password_confirmation">Retype Password:</label><%= password_field "user", "password_confirmation", :size => 30 %></p>
+    
+    <br/>
+    <h3>Contact Information</h3>
     <p><label class="form-label" for="user_fname">First Name:</label><%= text_field 'user', 'fname' %></p>
     <p><label class="form-label" for="user_lname">Last Name:</label><%= text_field 'user', 'lname' %></p>
     <p><label class="form-label" for="user_email">E-mail:</label><%= text_field 'user', 'email' %></p>

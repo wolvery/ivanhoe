@@ -1,10 +1,9 @@
-<h2>Log in</h2>
+<h2>Please Sign In</h2>
 
 <% form_for :user, :url => { :action=>'login', :id => @user } do |f| %>
 
 <div title="Account login" id="loginform" class="form">
-    <h3>Please enter your account information.  </h3>
-    
+    <p>Please enter your account information. Click <a href="/account/signup">here</a> to create a new account.</p>
     <% if @message %>
       <div id="message"><%= @message %></div>
     <% end %>

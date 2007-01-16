@@ -18,17 +18,9 @@
 <h3>Player List</h3>
 <ul >
 <% for player in @players %>
-    <li><a href="/players/<%=player.id%>"><%= player.playername %></a> <% if can_edit_game?(@game.id) %>- <a href="/journals/show/<%= @game.id %>?player=<%= player.playername %>">view journal</a><% end %></li>
+    <li><a href="/players/<%=player.id%>"><%= player.playername %></a> <% if can_edit_game?(@game.id) %>- <a href="/journals/show/<%= @game.id %>?player_id=<%= player.id %>">view journal</a><% end %></li>
 <% end %>
 </ul>
-
-<h3>Role List</h3>
-<ul >
-<% for role in @roles %>
-    <li><%= role.name %></li>
-<% end %>
-</ul>
-
 
 <a href="/games/launch/<%= @game.id %>.jnlp">play</a>
 
