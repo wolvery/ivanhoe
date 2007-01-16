@@ -63,10 +63,4 @@ class PlayersController < ApplicationController
     end
   end
   
-  protected
-  
-  def admin_filter
-    (session['user'] and session['user'].admin)
-  end
-  
 end
