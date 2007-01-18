@@ -3,4 +3,14 @@
 <p><label class="form-label" for="game_objectives">Objectives</label><%= form.text_area 'objectives', { :class => 'form-field' } %></p>
 <p><label class="form-label" for="game_private">Private</label><%= form.check_box 'private', { :class => 'form-field-checkbox' } %></p>
 <p><label class="form-label" for="game_restricted">Restricted</label><%= form.check_box 'restricted', { :class => 'form-field-checkbox' } %></p>
-    
+
+<div>
+    <select id="player-list" name="selected_player"> 
+        <% for player in @player_list %>
+            <option value="<%= player.id %>"><%= player.display_name %></option> 
+        <% end %>
+    </select> 
+
+    <select id="guest-list" name="guest_list"> 
+    </select> 
+</div>

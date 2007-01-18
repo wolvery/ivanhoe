@@ -2,18 +2,22 @@ class GamePlayerList < ActiveRecord::Base
   set_table_name "player_game_role"   
   
   def self.get_players( game_id )
-    players_and_roles = find(:all, :conditions => "fk_game_id = #{game_id}")
+    players_and_roles = find(:all, :conditions => "fk_game_id = #{game_id}" )
     raw_players = []
     players_and_roles.each do |list_row|
       raw_players << Player.find(list_row.fk_player_id)
     end
     
+    # pull out the players who are members
     players = []
     raw_players.map { |player|   
       if( !players.member? player )
        players << player
       end
     }
+    
+    # sort them by last name
+    players.sort! { |x,y|  x.lname <=> y.lname }
     
     players
   end

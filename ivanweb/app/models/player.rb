@@ -3,6 +3,10 @@ require 'digest/md5'
 # this model expects a certain database layout and its based on the name/login pattern. 
 class Player < ActiveRecord::Base
   set_table_name "player"  
+  
+  def display_name
+    "#{self.lname.capitalize}, #{self.fname.capitalize}"
+  end
  
   def self.authenticate(login, pass)
     find( :first, :conditions => ["playername = ? AND password = ?", login, md5(pass)])
@@ -30,6 +34,8 @@ class Player < ActiveRecord::Base
   end
 
   validates_length_of :playername, :within => 1..40
+  validates_length_of :lname, :within => 1..40
+  validates_length_of :fname, :within => 1..40
   validates_length_of :password, :within => 1..40
   validates_presence_of :playername, :password, :password_confirmation
   validates_uniqueness_of :playername, :on => :create

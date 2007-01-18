@@ -43,6 +43,7 @@ class GamesController < ApplicationController
   # GET /games/1;edit
   def edit
     @game = Game.find(params[:id])
+    @player_list = Player.find(:all, :order => 'lname')
   end
 
   # POST /games
