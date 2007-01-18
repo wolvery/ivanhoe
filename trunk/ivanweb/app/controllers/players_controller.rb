@@ -7,7 +7,7 @@ class PlayersController < ApplicationController
   # GET /players
   # GET /players.xml
   def index
-    @players = Player.find(:all)
+    @players = Player.find(:all, :order => 'lname')
 
     respond_to do |format|
       format.html # index.rhtml
@@ -22,7 +22,6 @@ class PlayersController < ApplicationController
 
     respond_to do |format|
       format.html # show.rhtml
-      format.xml  { render :xml => @player.to_xml }
     end
   end
 
