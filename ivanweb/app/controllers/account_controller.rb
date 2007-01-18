@@ -20,8 +20,14 @@ class AccountController < ApplicationController
       when :post
         @user = Player.new(params['user'])
         
+          # use ivanhoe's keyspace table for unique id
+          keyspace = Keyspace.find( :first, :conditions => "tablename = 'player'" )
+          @user.id = keyspace.next_value
+          keyspace.next_value = keyspace.next_value + 1
+          keyspace.save
+        
         if @user.save      
-          session['user'] = Player.authenticate(@user.login, params['user']['password'])
+          session['user'] = Player.authenticate(@user.playername, params['user']['password'])
           flash['notice']  = "Signup successful"
           redirect_back_or_default :controller => "games", :action => "index"          
         end
