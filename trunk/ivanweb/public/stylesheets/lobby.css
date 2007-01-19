@@ -23,3 +23,27 @@
 .form-field-checkbox {
     width: 15px;
 }
+
+.source-list {
+    float: left;
+    margin: 20px;
+}
+
+.migrate-button {
+    margin-top: 120px;
+    float: left;
+}
+
+.dest-list {
+    float: left;
+    margin: 20px;
+}
+
+.dest-list select {
+    width: 200px;
+}
+
+.update-button {
+    clear: both;
+    float: right;   
+}
