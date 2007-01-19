@@ -5,7 +5,7 @@
 # ENV['RAILS_ENV'] ||= 'production'
 
 # Specifies gem version of Rails to use when vendor/rails is not present
-RAILS_GEM_VERSION = '1.1.6' unless defined? RAILS_GEM_VERSION
+RAILS_GEM_VERSION =  '1.2.1' # '1.1.6.5848'
 
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
@@ -58,3 +58,6 @@ end
 Mime::Type.register " application/x-java-jnlp-file", :jnlp
 
 # Include your application configuration below
+
+# for Ivanhoe JNLP generation, no trailing slash
+DOMAIN_URL = "http://localhost:3000"
