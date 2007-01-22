@@ -8,11 +8,13 @@ class GamesController < ApplicationController
   # GET /games
   # GET /games.xml
   def index
-    @games = Game.find(:all)
+    @archive_games = Game.find(:all)
+    @active_games = Game.active_games
+    @my_games = []
 
     respond_to do |format|
       format.html # index.rhtml
-      format.xml  { render :xml => @games.to_xml }
+      format.xml  { render :xml => @archive_games.to_xml }
     end
   end
 
@@ -38,6 +40,7 @@ class GamesController < ApplicationController
   # GET /games/new
   def new
     @game = Game.new
+    @player_list = Player.find(:all, :order => 'lname')
   end
 
   # GET /games/1;edit
