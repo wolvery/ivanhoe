@@ -8,6 +8,10 @@
     width: 80%;
 }
 
+.game-list-header {
+    padding-top: 20px;
+}
+
 .game-list-row {
     width: 80%;
 }
