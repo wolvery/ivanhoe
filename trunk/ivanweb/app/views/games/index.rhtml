@@ -1,12 +1,49 @@
 <div id="bodytext">
 
-<h2>Games</h2>
+<h2 class="game-list-header">My Games</h2>
 
-<p>The following games are currently active:</p>
+<% if session['user'] then %>
+    <p>A list of games you have participated in:</p>
+
+    <table id="game-list">
+      <tr/>
+    <% for game in @my_games %>
+      <tr class="game-list-row">
+        <td><a href="games/show/<%= game.id %>"><%= game.name %></a></td>
+        <td><a href="games/launch/<%= game.id %>.jnlp">Play</a></td>
+        <% if admin? then %>
+            <td><%= link_to 'Delete', game_path(game), :confirm => "Delete game \"#{game.name}\"?", :method => :delete %></td>
+        <% end %>
+      </tr>
+    <% end %>
+    </table>
+<% else %>
+    <p>You are not currently logged in. You can <a href="/account/login">log in</a> or <a href="/account/signup">create an account</a>.</p>
+<% end %>
+
+<h2 class="game-list-header" >Recently Played Games</h2>
+
+<p>The following games have been recently played:</p>
 
 <table id="game-list">
   <tr/>
-<% for game in @games %>
+<% for game in @active_games %>
+  <tr class="game-list-row">
+    <td><a href="games/show/<%= game.id %>"><%= game.name %></a></td>
+    <td><a href="games/launch/<%= game.id %>.jnlp">Play</a></td>
+    <% if admin? then %>
+        <td><%= link_to 'Delete', game_path(game), :confirm => "Delete game \"#{game.name}\"?", :method => :delete %></td>
+    <% end %>
+  </tr>
+<% end %>
+</table>
+
+<h2 class="game-list-header">Archived Games</h2>
+<p>An archive of Ivanhoe Games:</p>
+
+<table id="game-list">
+  <tr/>
+<% for game in @archive_games %>
   <tr class="game-list-row">
     <td><a href="games/show/<%= game.id %>"><%= game.name %></a></td>
     <td><a href="games/launch/<%= game.id %>.jnlp">Play</a></td>
