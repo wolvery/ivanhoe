@@ -22,6 +22,23 @@ class GamePlayerList < ActiveRecord::Base
     players
   end
   
+  def self.get_games( player )
+   if not player then return nil end   
+   game_ids = find(:all, :conditions => "fk_player_id = #{player.id}")   
+   
+   games = []
+   game_ids.each do |game_id|
+    begin
+      game = Game.find(game_id.fk_game_id)
+      games << game    
+    rescue
+      # ignore games that no longer exist
+    end
+   end
+   
+   games
+  end
+  
   def self.get_roles( game_id )
     players_and_roles = find(:all, :conditions => "fk_game_id = #{game_id}")
 
