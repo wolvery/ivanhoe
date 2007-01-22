@@ -41,6 +41,8 @@ public class AddDocAction extends AbstractAction implements IPermissionListener
 		this.roleManager = roleManager;
         this.ivanhoeFrame = frame;
 		writePermissionsChanged(false);
+		
+		putValue(Action.SHORT_DESCRIPTION, "add document");
 	}
 	
 	public void actionPerformed(ActionEvent e)
