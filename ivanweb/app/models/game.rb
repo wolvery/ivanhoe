@@ -20,7 +20,6 @@ class Game < ActiveRecord::Base
     games
   end
   
-  
   validates_length_of :name, :within => 1..100
   
 end

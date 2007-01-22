@@ -10,7 +10,7 @@ class GamesController < ApplicationController
   def index
     @archive_games = Game.find(:all)
     @active_games = Game.active_games
-    @my_games = []
+    @my_games = GamePlayerList.get_games(session['user'])
 
     respond_to do |format|
       format.html # index.rhtml
