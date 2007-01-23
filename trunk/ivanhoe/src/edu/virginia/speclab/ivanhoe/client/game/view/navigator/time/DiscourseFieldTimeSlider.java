@@ -370,13 +370,13 @@ public class DiscourseFieldTimeSlider extends JPanel implements
             if (markerType == EVENT_MARKER)
             {
                 // create an offscreen buffer to work in
-                BufferedImage markImage = imageLoader.createImage(20, 1);
+                BufferedImage markImage = imageLoader.createImage(20, 10);
                 Graphics2D g = markImage.createGraphics();
 
                 // draw the mark
                 g.setColor(markerColor);
 
-                g.drawLine(10, 0, 16, 0);
+                g.drawLine(10, 0, 10, 6);
                 g.dispose();
 
                 // simply display the image using a Swing ImageIcon
@@ -392,26 +392,28 @@ public class DiscourseFieldTimeSlider extends JPanel implements
 
     public DiscourseFieldTimeSlider()
     {
+        
         listeners = new LinkedList();
         
         playing = false;
         timeUnit = BASE_TIME_UNIT;
 
         setBackground(Color.BLACK);
+        setLayout(new BorderLayout());
 
         timeTrack = new JSlider();
         IvanhoeSliderUI sliderUI = new IvanhoeSliderUI(timeTrack);
         timeTrack.setUI(sliderUI);
         timeTrack.setFocusable(false);
-        timeTrack.setOrientation(JSlider.VERTICAL);
+        timeTrack.setOrientation(JSlider.HORIZONTAL);
         timeTrack.setInverted(true);
-        timeTrack.setPreferredSize(new Dimension(50,Integer.MAX_VALUE));
-        timeTrack.setBorder(LineBorder.createGrayLineBorder());
-        setLayout(new BorderLayout());
-        add(timeTrack, BorderLayout.CENTER);
 
+        timeTrack.setBorder(LineBorder.createGrayLineBorder());
+        add(timeTrack, BorderLayout.CENTER);
+        
         timeTrack.setValue(0);
         timeTrack.setOpaque(false);
+             
     }
 
     public void init(DiscourseFieldTimeline dfTimeline,
