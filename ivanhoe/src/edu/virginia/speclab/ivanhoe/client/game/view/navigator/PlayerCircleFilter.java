@@ -76,14 +76,17 @@ public class PlayerCircleFilter extends Box implements IDiscourseFieldNavigatorL
 		
 		Area circleArea = pc.getCircleArea(aspectW, aspectH);
 		
-        int trayWidth = (int)((circleNum + 1) * 
-                (PLAYERCIRCLE_MARGIN + circleArea.getBounds2D().getWidth() ));
-        int trayHeight = (int)(2 * PLAYERCIRCLE_MARGIN + circleArea.getBounds2D().getHeight());
-                
-		if (trayHeight < OPTIMAL_TRAY_HEIGHT)
-		{
-			trayWidth = OPTIMAL_TRAY_HEIGHT;
-		}
+//        int trayWidth = (int)((circleNum + 1) * 
+//                (PLAYERCIRCLE_MARGIN + circleArea.getBounds2D().getWidth() ));
+//        int trayHeight = (int)(2 * PLAYERCIRCLE_MARGIN + circleArea.getBounds2D().getHeight());
+        
+        int trayWidth = (int)(2 * PLAYERCIRCLE_MARGIN + circleArea.getBounds2D().getWidth());
+        int trayHeight = (int)((circleNum + 1) * (PLAYERCIRCLE_MARGIN + circleArea.getBounds2D().getHeight() ));
+//                
+//		if (trayHeight < OPTIMAL_TRAY_HEIGHT)
+//		{
+//			trayHeight = OPTIMAL_TRAY_HEIGHT;
+//		}
 		
 		super.setSize(trayWidth, trayHeight);		
         
@@ -105,7 +108,7 @@ public class PlayerCircleFilter extends Box implements IDiscourseFieldNavigatorL
 			double xOffset = getXOffsetForPlayerCircle(pc, circleNum, aspectW, aspectH);
 			double yOffset = getYOffsetForPlayerCircle(pc, circleNum, aspectW, aspectH);
 			transform.setToIdentity();
-			transform.translate(xOffset, -yOffset);			
+			transform.translate(xOffset, yOffset);			
 			pc.paint(g,aspectW,aspectH,transform);
             
             //TODO fix and turn back on
@@ -212,26 +215,30 @@ public class PlayerCircleFilter extends Box implements IDiscourseFieldNavigatorL
 		return false;
 	}
 	
-	private double getYOffsetForPlayerCircle(PlayerCircle circle, int circleNumber, 
+	private double getXOffsetForPlayerCircle(PlayerCircle circle, int circleNumber, 
 			double aspectW, double aspectH)
 	{
-      Area circleArea = circle.getCircleArea(aspectW, aspectH);
-      double neededHeight = 2 * PLAYERCIRCLE_MARGIN + circleArea.getBounds2D().getHeight();
-
-      if (neededHeight < OPTIMAL_TRAY_HEIGHT)
-      {
-            neededHeight = OPTIMAL_TRAY_HEIGHT;
-      }
-
-      return -getY() - neededHeight;    
+      Area circleArea = circle.getCircleArea(aspectW,aspectH);
+      double neededWidth = 2 * PLAYERCIRCLE_MARGIN + circleArea.getBounds2D().getWidth();
+   
+      return getX() - neededWidth;    
 	}
 	
-	private double getXOffsetForPlayerCircle(PlayerCircle circle, int circleNumber,
+	private double getYOffsetForPlayerCircle(PlayerCircle circle, int circleNumber,
 			double aspectW, double aspectH)
 	{
-        Area circleArea = circle.getCircleArea(aspectW,aspectH);
-        return getX() - ((circleNumber + 1) * 
-                (circleArea.getBounds2D().getWidth() + PLAYERCIRCLE_MARGIN));
+	    Area circleArea = circle.getCircleArea(aspectW, aspectH);
+	    double neededHeight = 2 * PLAYERCIRCLE_MARGIN + circleArea.getBounds2D().getHeight();
+   
+        if (neededHeight < OPTIMAL_TRAY_HEIGHT)
+        {
+          neededHeight = OPTIMAL_TRAY_HEIGHT;
+        }
+        
+        int y = getY();
+
+        return y - ((circleNumber + 1) * 
+                (circleArea.getBounds2D().getHeight() + PLAYERCIRCLE_MARGIN));
 	}
 	
 //	public int getWidth()

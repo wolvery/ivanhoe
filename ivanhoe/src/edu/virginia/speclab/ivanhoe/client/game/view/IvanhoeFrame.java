@@ -120,17 +120,20 @@ public class IvanhoeFrame extends JFrame implements IStatusListener,
         
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(Workspace.instance,BorderLayout.CENTER);
-        
+
         this.timeSlider = new DiscourseFieldTimeSlider();
         this.timeControls = new DiscourseFieldTimeControls(timeSlider);
         
         Dimension size = timeControls.getPreferredSize();
-        timeControls.setSize(size.width,size.height);
+        timeControls.setSize(size.width,size.height);    
         
-        getContentPane().add(timeSlider,BorderLayout.EAST);
+        Dimension targetSize = new Dimension(Workspace.instance.getWidth()-timeControls.getWidth(),timeControls.getHeight());
+        timeSlider.setSize(targetSize);
+        timeSlider.setPreferredSize(targetSize);
+        
+        Workspace.instance.add(timeSlider, new Integer(0), 1);
         Workspace.instance.add(timeControls, new Integer(0), 0);
         Workspace.instance.addComponentListener(new Resizer());
-        
     }
     
     private class Resizer extends ComponentAdapter
@@ -138,6 +141,10 @@ public class IvanhoeFrame extends JFrame implements IStatusListener,
         public void componentResized(ComponentEvent e)
         {
             timeControls.setLocation(0,Workspace.instance.getHeight()-timeControls.getHeight());
+            timeSlider.setLocation(timeControls.getWidth(),Workspace.instance.getHeight()-timeSlider.getHeight());
+            Dimension targetSize = new Dimension(Workspace.instance.getWidth()-timeControls.getWidth(),timeControls.getHeight());
+            timeSlider.setSize(targetSize);
+            timeSlider.setPreferredSize(targetSize);
         }
     }
     
