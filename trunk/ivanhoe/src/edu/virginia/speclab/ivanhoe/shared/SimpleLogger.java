@@ -8,8 +8,6 @@
 package edu.virginia.speclab.ivanhoe.shared;
 
 import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.BasicConfigurator;
@@ -37,12 +35,12 @@ public final class SimpleLogger
       File logFile = new File(fileName);
       if (logFile.exists())
       {
-         SimpleDateFormat dateFormat = 
-            new SimpleDateFormat ("MMddhhmm");
-         Date date = new Date();
-         String newName = fileName + "-" + dateFormat.format(date);
-         logFile.renameTo(new File(newName));
-//         logFile.delete();
+//         SimpleDateFormat dateFormat = 
+//            new SimpleDateFormat ("MMddhhmm");
+//         Date date = new Date();
+//         String newName = fileName + "-" + dateFormat.format(date);
+//         logFile.renameTo(new File(newName));
+         logFile.delete();
       }
       
       FileAppender fa = new FileAppender(
