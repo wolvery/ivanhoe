@@ -150,12 +150,11 @@ public class PlayerCircleFilter extends Box implements IDiscourseFieldNavigatorL
 				continue;
 			}
 			
-			double yOffset = getYOffsetForPlayerCircle(pc, circleNum,
-					pc.getLastCircleAspectW(), pc.getLastCircleAspectH());
+			double yOffset = getYOffsetForPlayerCircle(pc, circleNum, pc.getLastCircleAspectW(), pc.getLastCircleAspectH());
 			double xOffset = getXOffsetForPlayerCircle(pc, circleNum, pc.getLastCircleAspectH(), pc.getLastCircleAspectW());
 			
 			transform.setToIdentity();
-			transform.translate(xOffset, -yOffset);
+			transform.translate(xOffset, yOffset);
 			
 			if (pc.testHighlight(p, transform))
 			{
@@ -191,12 +190,11 @@ public class PlayerCircleFilter extends Box implements IDiscourseFieldNavigatorL
 				continue;
 			}
 			
-			double yOffset = getYOffsetForPlayerCircle(pc, circleNum,
-					pc.getLastCircleAspectW(), pc.getLastCircleAspectH());
+			double yOffset = getYOffsetForPlayerCircle(pc, circleNum, pc.getLastCircleAspectW(), pc.getLastCircleAspectH());
 			double xOffset = getXOffsetForPlayerCircle(pc, circleNum, pc.getLastCircleAspectH(), pc.getLastCircleAspectW());
 			
 			transform.setToIdentity();
-			transform.translate(xOffset, -yOffset);
+			transform.translate(xOffset, yOffset);
 			
 			if (pc.testSelection(p, numClicks, transform))
 			{
@@ -228,17 +226,7 @@ public class PlayerCircleFilter extends Box implements IDiscourseFieldNavigatorL
 			double aspectW, double aspectH)
 	{
 	    Area circleArea = circle.getCircleArea(aspectW, aspectH);
-	    double neededHeight = 2 * PLAYERCIRCLE_MARGIN + circleArea.getBounds2D().getHeight();
-   
-        if (neededHeight < OPTIMAL_TRAY_HEIGHT)
-        {
-          neededHeight = OPTIMAL_TRAY_HEIGHT;
-        }
-        
-        int y = getY();
-
-        return y - ((circleNumber + 1) * 
-                (circleArea.getBounds2D().getHeight() + PLAYERCIRCLE_MARGIN));
+		return OPTIMAL_TRAY_HEIGHT + ((PLAYERCIRCLE_MARGIN + circleArea.getBounds2D().getHeight()) * circleNumber);
 	}
 	
 //	public int getWidth()
