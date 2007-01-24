@@ -20,7 +20,6 @@ import edu.virginia.speclab.ivanhoe.client.pregame.LoginTransaction;
 import edu.virginia.speclab.ivanhoe.client.pregame.LoginTransactionListener;
 import edu.virginia.speclab.ivanhoe.client.util.PropertiesManager;
 import edu.virginia.speclab.ivanhoe.client.util.ServerSynchronizedClock;
-import edu.virginia.speclab.ivanhoe.shared.Encryption;
 import edu.virginia.speclab.ivanhoe.shared.IMessageHandler;
 import edu.virginia.speclab.ivanhoe.shared.Semaphore;
 import edu.virginia.speclab.ivanhoe.shared.SimpleLogger;
