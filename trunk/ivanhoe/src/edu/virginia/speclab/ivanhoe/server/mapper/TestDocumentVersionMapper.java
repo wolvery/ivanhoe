@@ -26,7 +26,7 @@ public class TestDocumentVersionMapper extends TestCase
         IvanhoeServer.initLogging(true);
         
         // connect DB
-        if (DBManager.instance.connect("localhost","test_ivanhoe") == false )
+        if (DBManager.instance.connect("localhost","ivanhoe","gam3","ivanhoe_test") == false )
         {
            SimpleLogger.logError("Unable to connect DB");
            fail();
