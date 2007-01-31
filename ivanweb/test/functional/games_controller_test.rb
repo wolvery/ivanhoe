@@ -5,7 +5,7 @@ require 'games_controller'
 class GamesController; def rescue_action(e) raise e end; end
 
 class GamesControllerTest < Test::Unit::TestCase
-  fixtures :games
+  fixtures :game
 
   def setup
     @controller = GamesController.new
