@@ -4,8 +4,9 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-package edu.virginia.speclab.ivanhoe.client.game.model.document;
+package edu.virginia.speclab.ivanhoe.client.test;
 
+import edu.virginia.speclab.ivanhoe.client.game.model.document.TextRange;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 

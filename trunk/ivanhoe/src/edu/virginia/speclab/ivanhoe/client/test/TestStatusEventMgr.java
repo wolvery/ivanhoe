@@ -2,8 +2,10 @@
  * Created on Jan 13, 2004
  *
  */
-package edu.virginia.speclab.ivanhoe.client.game.model.util;
+package edu.virginia.speclab.ivanhoe.client.test;
 
+import edu.virginia.speclab.ivanhoe.client.game.model.util.IStatusListener;
+import edu.virginia.speclab.ivanhoe.client.game.model.util.StatusEventMgr;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 

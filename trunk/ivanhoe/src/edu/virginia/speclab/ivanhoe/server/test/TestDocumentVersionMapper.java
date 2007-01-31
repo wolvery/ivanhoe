@@ -1,10 +1,16 @@
-package edu.virginia.speclab.ivanhoe.server.mapper;
+package edu.virginia.speclab.ivanhoe.server.test;
 
 import java.util.Date;
 import java.util.HashSet;
 
 import edu.virginia.speclab.ivanhoe.server.exception.MapperException;
 import edu.virginia.speclab.ivanhoe.server.game.IvanhoeServer;
+import edu.virginia.speclab.ivanhoe.server.mapper.DiscourseFieldMapper;
+import edu.virginia.speclab.ivanhoe.server.mapper.DocumentMapper;
+import edu.virginia.speclab.ivanhoe.server.mapper.DocumentVersionMapper;
+import edu.virginia.speclab.ivanhoe.server.mapper.GameMapper;
+import edu.virginia.speclab.ivanhoe.server.mapper.RoleMapper;
+import edu.virginia.speclab.ivanhoe.server.mapper.UserMapper;
 import edu.virginia.speclab.ivanhoe.shared.SimpleLogger;
 import edu.virginia.speclab.ivanhoe.shared.data.DocumentInfo;
 import edu.virginia.speclab.ivanhoe.shared.data.DocumentVersion;

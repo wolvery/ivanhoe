@@ -2,8 +2,9 @@
  * Created on Dec 8, 2004
  *
  */
-package edu.virginia.speclab.ivanhoe.client.util;
+package edu.virginia.speclab.ivanhoe.client.test;
 
+import edu.virginia.speclab.ivanhoe.client.util.PropertiesManager;
 import junit.framework.TestCase;
 
 /**
