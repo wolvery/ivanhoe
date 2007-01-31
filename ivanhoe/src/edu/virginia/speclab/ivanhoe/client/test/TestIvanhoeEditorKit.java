@@ -4,7 +4,7 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package edu.virginia.speclab.ivanhoe.client.game.model.document;
+package edu.virginia.speclab.ivanhoe.client.test;
 
 import java.io.IOException;
 
