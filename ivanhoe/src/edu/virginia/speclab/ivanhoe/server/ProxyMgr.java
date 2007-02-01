@@ -168,19 +168,6 @@ public class ProxyMgr implements IDisconnectListener
          return false;  
       }
       
-      UserProxy existingProxy = getProxyByName(proxy.getID());
-      if ( existingProxy != null)
-      {
-         SimpleLogger.logInfo("Proxy [" + proxy.getID() +
-             "] already exists, bumping."); 
-             
-         if (removeProxy(existingProxy) == false)
-         {
-            SimpleLogger.logError("Unable to remove duplicate proxy"); 
-            return false;
-         }    
-      }
-
       SimpleLogger.logInfo("Adding proxy [" + proxy.getID() + "]"); 
       this.proxies.add(proxy);  
       
@@ -223,7 +210,33 @@ public class ProxyMgr implements IDisconnectListener
    /**
     * Disconnect all proxies and clear the managed list
     */
-   public synchronized void removeAllProxies(int gameID)
+   public synchronized void removeAllProxies()
+   {
+       SimpleLogger.logInfo("Removing all proxies");
+      
+      synchronized ( this.proxies ) {
+          for (Iterator itr = this.proxies.iterator(); itr.hasNext();)
+          {
+             UserProxy proxy = (UserProxy)itr.next();
+             
+             proxy.unregisterDisconnectHandler(this);
+             SimpleLogger.logInfo("   Removing [" + proxy.getID() + "]");
+             if (proxy.isConnected())
+             {
+                SimpleLogger.logInfo("   Disconnect required");
+                proxy.disconnect();
+             }
+      }
+      }
+      
+      //TODO this is wrong
+      this.proxies.clear();
+   }
+   
+   /**
+    * Disconnect all proxies in the specified game
+    */
+   public synchronized void removeAllProxies( int gameID )
    {
       SimpleLogger.logInfo("Removing all proxies");
       
@@ -232,21 +245,19 @@ public class ProxyMgr implements IDisconnectListener
           {
              UserProxy proxy = (UserProxy)itr.next();
              
-             if( gameID == proxy.getGameID() ) {
-	              proxy.unregisterDisconnectHandler(this);
+             if( gameID == proxy.getGameID() ) {            	 
+	             proxy.unregisterDisconnectHandler(this);
 	             SimpleLogger.logInfo("   Removing [" + proxy.getID() + "]");
-	             if (proxy.isConnected())
-	             {
+	             if (proxy.isConnected()) {
 	                SimpleLogger.logInfo("   Disconnect required");
 	                proxy.disconnect();
 	             }
+	             this.proxies.remove(proxy);
              }
-          }
-      }
-      
-      //TODO this is wrong
-      this.proxies.clear();
+	      }
+      }      
    }
+
 
 
    /**
@@ -268,4 +279,8 @@ public class ProxyMgr implements IDisconnectListener
       }
       return count;
    }
+
+public List getProxies() {
+	return proxies;
+}
 }

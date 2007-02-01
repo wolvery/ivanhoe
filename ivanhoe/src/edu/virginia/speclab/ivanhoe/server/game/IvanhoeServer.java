@@ -18,6 +18,7 @@ import edu.virginia.speclab.ivanhoe.shared.database.DBManager;
 import edu.virginia.speclab.ivanhoe.shared.message.*;
 import edu.virginia.speclab.ivanhoe.server.AdminListener;
 import edu.virginia.speclab.ivanhoe.server.ProxyMgr;
+import edu.virginia.speclab.ivanhoe.server.exception.MapperException;
 
 /**
  * @author lfoster
@@ -30,7 +31,6 @@ public class IvanhoeServer
 {
    private AdminListener adminListener;
    private String discourseFieldRoot;
-   private IvanhoeGame ivanhoeGame;
    private ProxyMgr proxyMgr;
 
    private String name;
@@ -43,6 +43,8 @@ public class IvanhoeServer
    private volatile boolean running;
    
    private static final String PROPERTIES_FILE = System.getProperty("IVANHOE_DIR",".")+"/ivanhoe.properties";
+   
+   public static IvanhoeServer instance = null;
 
    /**
     * MAIN - start point for the IvanhoeServer
@@ -50,8 +52,8 @@ public class IvanhoeServer
     */
    public static void main(String[] args)
    {
-      IvanhoeServer server = new IvanhoeServer();
-      if (server.init() == false)
+      IvanhoeServer.instance = new IvanhoeServer();
+      if (IvanhoeServer.instance.init() == false)
       {
          System.err.println("Unable to start server, see log for details");
          System.exit(-1);
@@ -60,7 +62,7 @@ public class IvanhoeServer
       SimpleLogger.logInfo("Server is ready");
       System.out.println("Ivanhoe game server is running");
       
-      server.mainLoop();
+      IvanhoeServer.instance.mainLoop();
    }
 
    /**
@@ -164,7 +166,7 @@ public class IvanhoeServer
           SimpleLogger.logError("Unable to create server socket", e1);
           return false;
 	  }
-
+      
       return true;
    }
    
@@ -222,9 +224,9 @@ public class IvanhoeServer
    {
       return this.discourseFieldRoot;
    }
-   
+      
    /**
-    * Accept connections and add them to an unauthorized proxy list
+    * Accept connections and add them to a proxy list
     */
    private void mainLoop()
    {
@@ -240,7 +242,22 @@ public class IvanhoeServer
         	// when a new connection is formed, spawn a game object which will handle
         	// this communication session with the client.
             client = this.socket.accept();
-            new IvanhoeGame(new CommEndpoint(client),this,this.proxyMgr);
+            
+            UserProxy userProxy = null;
+            try
+            {
+               userProxy = new UserProxy();
+               userProxy.connect(new CommEndpoint(client));
+               this.proxyMgr.addProxy( userProxy );
+               userProxy.registerDisconnectHandler( this.proxyMgr );
+               
+               // enable the proxy
+               userProxy.setEnabled(true);       
+            }
+            catch (MapperException e)
+            {
+          	  userProxy.disconnect();
+            }   
          }
          catch (IOException e)
          {
@@ -259,7 +276,7 @@ public class IvanhoeServer
       // stop admin stuff
       this.adminListener.stopListening();
       
-      ivanhoeGame.shutdown();
+      this.proxyMgr.removeAllProxies();
       
       // close DB
       DBManager.instance.disconnect();
@@ -273,7 +290,7 @@ public class IvanhoeServer
     */
    public void broadcastMessage(Message msg)
    {
-         ivanhoeGame.broadcastMessage(msg);
+	   this.proxyMgr.broadcastMessage(msg);   	
    }
    
    /**
@@ -328,7 +345,8 @@ public class IvanhoeServer
    
    public void kickAllPlayers()
    {
-	   ivanhoeGame.kickAllPlayers();
+	   //TODO fix
+//	   ivanhoeGame.kickAllPlayers();
    }
    
    /**
@@ -336,13 +354,18 @@ public class IvanhoeServer
     */
    public boolean kickPlayer(String kickedPlayer)
    {
-      SimpleLogger.logInfo("Got kickout request for ["+kickedPlayer+"]");
-	     if (ivanhoeGame.isPlayer(kickedPlayer))
-	     {
-	    	 ivanhoeGame.kickPlayer(kickedPlayer);
-	        return true;
-	     }
+	   	//TODO fix
+//      SimpleLogger.logInfo("Got kickout request for ["+kickedPlayer+"]");
+//	     if (ivanhoeGame.isPlayer(kickedPlayer))
+//	     {
+//	    	 ivanhoeGame.kickPlayer(kickedPlayer);
+//	        return true;
+//	     }
       return false;    
    }
-   
+	
+	public ProxyMgr getProxyMgr() {
+		return proxyMgr;
+	}
+
 }
