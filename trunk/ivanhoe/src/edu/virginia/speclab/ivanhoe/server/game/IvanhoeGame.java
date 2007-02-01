@@ -44,20 +44,14 @@ public class IvanhoeGame implements IMessageHandler, IDocumentHandler
     * @param gameInfo the info describing this game
     * @param server the IvanhoeServer on which this game is hosted
     */
-   public IvanhoeGame( int gameID )   
+   public IvanhoeGame( int gameID ) throws MapperException  
    {      
 	   this.proxyMgr = IvanhoeServer.instance.getProxyMgr();
 	   	       
  	   //  if we don't have the game info yet, look it up
-	   GameMapper gameMapper = new GameMapper();
+	   GameMapper gameMapper = new GameMapper();	   
+	   this.gameInfo = gameMapper.get(gameID);
 	   
-	   try {
-		this.gameInfo = gameMapper.get(gameID);
-	   } 
-	   catch (MapperException e) {
-		   SimpleLogger.logError("Unable to load game info for game id= "+gameID);
-	   }
-
        this.discourseFieldDir = IvanhoeServer.instance.getDiscourseFieldRoot() + File.separator + this.gameInfo.getName();
  	   this.receiver = new DocumentReceiver(discourseFieldDir, gameInfo.getId());
  	   this.receiver.addDocumentHandler(this);		   	     

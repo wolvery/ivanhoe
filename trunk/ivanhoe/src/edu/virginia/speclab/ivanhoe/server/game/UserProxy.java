@@ -110,8 +110,6 @@ public class UserProxy extends AbstractProxy
 				   
 				   // the game this user is playing in
 				   this.gameId = msg.getGameID();
-				   
-				   // the ivanhoe game object will process most messages
 				   this.ivanhoeGame = new IvanhoeGame(this.gameId);
 				   setDefaultMsgHandler( ivanhoeGame );
 				   
@@ -119,16 +117,14 @@ public class UserProxy extends AbstractProxy
 			       registerMsgHandler(MessageType.DOCUMENT_DATA, ivanhoeGame.getReceiver());
 			       registerMsgHandler(MessageType.IMAGE_DATA, ivanhoeGame.getReceiver());
 	
-				   SimpleLogger.logInfo("Successfully loaded [" + 
-				      this.userData.toString() + "");
+				   SimpleLogger.logInfo("Successfully loaded [" + this.userData.toString() + "");
 		
 				   // init journal files
-				   this.journalFile = new File(this.getID() + "-game" + 
-				      this.gameId + "-journal.html");
-				   this.tempFile = new File(this.getID() + "-game" + 
-				      this.gameId + "-scratch.html");
+				   this.journalFile = new File(this.getID() + "-game" + this.gameId + "-journal.html");
+				   this.tempFile = new File(this.getID() + "-game" + this.gameId + "-scratch.html");
 			   }
 			   catch( MapperException e ) {
+				   // database access error, disconnect
 				   disconnect();
 				   return;
 			   }
