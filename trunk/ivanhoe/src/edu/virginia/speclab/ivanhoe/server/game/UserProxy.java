@@ -29,6 +29,7 @@ public class UserProxy extends AbstractProxy
    protected int        gameId;
    private Role			currentRole;
    private Authenticator authenticator;
+   private IvanhoeGame ivanhoeGame;
    
    public UserProxy() 
    	throws MapperException
@@ -75,36 +76,64 @@ public class UserProxy extends AbstractProxy
    {
       SimpleLogger.logInfo("UserProxy [" + getID() +
             "] got [" + msg.toString() + "]" );
-         
       
-      // first authenticate the sender of this message, drop it if auth fails.
-      if( this.authenticator.performAuthentication(msg.getSender(), msg.getPassword(), true).length() != 0 ) {
-    	  disconnect();
-    	  return;
-      }
-    
-      // save the of of the game this user is playing in
-	   this.gameId = msg.getGameID();
-	  
-	   // get user data
-	   try {
-		   this.userData = UserMapper.getByName(msg.getSender());
-		   SimpleLogger.logInfo("Successfully loaded [" + 
-		      this.userData.toString() + "");
-		   
-		   // init journal files
-		   this.journalFile = new File(this.getID() + "-game" + 
-		      this.gameId + "-journal.html");
-		   this.tempFile = new File(this.getID() + "-game" + 
-		      this.gameId + "-scratch.html");
-	   }
-	   catch( MapperException e ) {
-		   disconnect();
-		   return;
-	   }
-	  
       try
       {
+	      // first authenticate the sender of this message, drop it if auth fails.
+	      if( this.authenticator.performAuthentication(msg.getSender(), msg.getPassword(), true).length() != 0 ) {
+	    	  disconnect();
+	    	  return;
+	      }
+    	  
+		   // if this is the first message recieved on this proxy, initialize 
+	       if( this.userData == null ) {   	   
+			   try {	
+				   
+				   // first disconnect any existing proxies with this username 
+				   UserProxy existingProxy = IvanhoeServer.instance.getProxyMgr().getProxyByName(msg.getSender());
+				   if ( existingProxy != null)
+				   {
+			         SimpleLogger.logInfo("Proxy [" + msg.getSender() +
+			             "] already exists, bumping."); 
+			             
+			         // if problem removing proxy, disconnect
+			         if (IvanhoeServer.instance.getProxyMgr().removeProxy(existingProxy) == false)
+			         {
+			            SimpleLogger.logError("Unable to remove duplicate proxy"); 
+			            disconnect();
+			            return;
+			         }    
+				   }
+				    
+				   // load more information about this user 
+				   this.userData = UserMapper.getByName(msg.getSender());
+				   
+				   // the game this user is playing in
+				   this.gameId = msg.getGameID();
+				   
+				   // the ivanhoe game object will process most messages
+				   this.ivanhoeGame = new IvanhoeGame(this.gameId);
+				   setDefaultMsgHandler( ivanhoeGame );
+				   
+				   // register the receiver for all document & image data from each player
+			       registerMsgHandler(MessageType.DOCUMENT_DATA, ivanhoeGame.getReceiver());
+			       registerMsgHandler(MessageType.IMAGE_DATA, ivanhoeGame.getReceiver());
+	
+				   SimpleLogger.logInfo("Successfully loaded [" + 
+				      this.userData.toString() + "");
+		
+				   // init journal files
+				   this.journalFile = new File(this.getID() + "-game" + 
+				      this.gameId + "-journal.html");
+				   this.tempFile = new File(this.getID() + "-game" + 
+				      this.gameId + "-scratch.html");
+			   }
+			   catch( MapperException e ) {
+				   disconnect();
+				   return;
+			   }
+	      }
+       
           // user proxy gets first shot at handling incomming msgs
           if ( msg.getType().equals(MessageType.LOGOUT))
           {
@@ -126,7 +155,7 @@ public class UserProxy extends AbstractProxy
           // give other handlers a chance to handle the msg
           routeMessage(msg); 
       }
-      // something this player did resulted in an exception
+      // something this player did resulted in an exception, stay alive but let them go
       catch( RuntimeException e )
       {       
            String player = null;
@@ -318,5 +347,9 @@ public class UserProxy extends AbstractProxy
 public User getUserData()
 {
     return userData;
+}
+
+public IvanhoeGame getIvanhoeGame() {
+	return ivanhoeGame;
 }
 }

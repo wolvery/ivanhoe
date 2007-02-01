@@ -31,54 +31,47 @@ public class IvanhoeGame implements IMessageHandler, IDocumentHandler
 {
    private static final int MAX_ROLE_NAME_SIZE = 50;
    
-   private  DocumentReceiver receiver;
    private  ProxyMgr proxyMgr;
    private  DiscussionMgr discussion;
    private  Messenger messenger;
    private  String discourseFieldDir;
-   private  IvanhoeServer server;
+   private  DocumentReceiver receiver;
 
    private  GameInfo gameInfo;
-   
    
    /**
     * Construct a new game instance
     * @param gameInfo the info describing this game
     * @param server the IvanhoeServer on which this game is hosted
     */
-   public IvanhoeGame( CommEndpoint endpoint, IvanhoeServer server, ProxyMgr proxyMgr )
+   public IvanhoeGame( int gameID )   
    {      
-      // hold reference to the server
-      this.server = server;
-      
-      this.proxyMgr = proxyMgr;
-   
-      // factory a user proxy, setup message & disconnect handling
-      // and add it to the list of managed proxies
-      UserProxy proxy = null;
-      try
-      {
-    	 // fire up the user proxy. the proxy contains the main execution
-    	 // thread for this connection. it will send messages back
-    	 // to IvanhoeGame to be handled.
-         proxy = new UserProxy();
-         proxy.connect(endpoint);
-         proxy.setDefaultMsgHandler( this );
-         this.proxyMgr.addProxy( proxy );
-         proxy.registerDisconnectHandler( this.proxyMgr );
-         
-         // register the receiver for all document & image data from each player
-         proxy.registerMsgHandler(MessageType.DOCUMENT_DATA, this.receiver);
-         proxy.registerMsgHandler(MessageType.IMAGE_DATA, this.receiver);
-         
-         // enable the proxy
-         proxy.setEnabled(true);
-      
-      }
-      catch (MapperException e)
-      {
-         proxy.disconnect();
-      }   
+	   this.proxyMgr = IvanhoeServer.instance.getProxyMgr();
+	   	       
+ 	   //  if we don't have the game info yet, look it up
+	   GameMapper gameMapper = new GameMapper();
+	   
+	   try {
+		this.gameInfo = gameMapper.get(gameID);
+	   } 
+	   catch (MapperException e) {
+		   SimpleLogger.logError("Unable to load game info for game id= "+gameID);
+	   }
+
+       this.discourseFieldDir = IvanhoeServer.instance.getDiscourseFieldRoot() + File.separator + this.gameInfo.getName();
+ 	   this.receiver = new DocumentReceiver(discourseFieldDir, gameInfo.getId());
+ 	   this.receiver.addDocumentHandler(this);		   	     
+
+ 	   // create game components
+ 	   this.discussion = new DiscussionMgr(this);
+ 	   this.messenger = new Messenger(IvanhoeServer.instance.getName(), this); 	    
+ 	   
+	   // add a game authentication rule if necessary
+	      //TODO enable game access restrictions
+//	      if (info.isRestricted() == true)
+//	      {
+//	         this.authenticator.addRule( new GameEntryCheck(this.info.getId(), this.info.getName()) );
+//	      }
    }
    
    // TODO still need this?
@@ -106,15 +99,7 @@ public class IvanhoeGame implements IMessageHandler, IDocumentHandler
 //		}
 //		return game;
 //	}
-   
-   /**
-    * Shutdown this game
-    */
-   public void shutdown()
-   {
-      this.proxyMgr.removeAllProxies(this.getGameId());
-   }
-   
+
    /**
     * Broadcast a message to all users in this game
     * @param msg
@@ -145,51 +130,11 @@ public class IvanhoeGame implements IMessageHandler, IDocumentHandler
       } 
    }
    
-   // create game components for the specified game ID
-   private boolean initGame( int gameID ) {
-	   
-	   // if we don't have the game info yet, look it up
-	   GameMapper gameMapper = new GameMapper();
-	   
-	   try {
-		this.gameInfo = gameMapper.get(gameID);
-	   } 
-	   catch (MapperException e) {
-		   SimpleLogger.logError("Unable to load game info for game id= "+gameID);
-		   return false;
-	   }
-
-	   // create game components
-	   this.discussion = new DiscussionMgr(this);
-	   this.messenger = new Messenger(this.server.getName(), this);
-	      
-	   this.discourseFieldDir = server.getDiscourseFieldRoot() + File.separator + this.gameInfo.getName();
-	   this.receiver = new DocumentReceiver(discourseFieldDir, gameInfo.getId());
-	   this.receiver.addDocumentHandler(this);		   	 
-	   
-	   // add a game authentication rule if necessary
-	      //TODO enable game access restrictions
-//	      if (info.isRestricted() == true)
-//	      {
-//	         this.authenticator.addRule( new GameEntryCheck(this.info.getId(), this.info.getName()) );
-//	      }
-	   
-	   return true;
-   }
-
-   
    /**
     * handle gameplay messages
     */
    public void handleMessage(Message msg)
    {
-
-	   // init the game that is related to this message
-	   if( !initGame(msg.getGameID()) ) {
-		   SimpleLogger.logError("Unable to init game with game ID "+msg.getGameID());
-		   return;			   
-	   }
-	   
 	   if(msg.getType().equals(MessageType.LOGIN)) {
 		   handleLogin(msg.getSender());
 	   } 
@@ -1207,4 +1152,9 @@ public class IvanhoeGame implements IMessageHandler, IDocumentHandler
    public int getGameId() {
 	   return (this.gameInfo != null) ? this.gameInfo.getId() : 0;
    }
+
+public DocumentReceiver getReceiver() {
+	return receiver;
+}
+
 }
