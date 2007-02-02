@@ -4,7 +4,7 @@
 <project name="Ivanhoe" default="help">
  
     <!-- load properties from a file that can override defaults -->
-    <property name="build.properties" value="res/build.properties"/>
+    <property name="build.properties" value="build.properties"/>
     <property file="${build.properties}"/>
     
     <!-- use the ant-contrib jar in the Ivanhoe repository -->
@@ -15,11 +15,12 @@
     </taskdef>
 
     <!-- default build values -->
-    <property name="server.name" value="IvanhoeDevelopers"/>
-    <property name="server.dist.dir" location="dist/server"/>
-    <property name="server.hostname" value="faustroll.clas.virginia.edu"/>
+    <property name="server.name" value="Ivanhoe"/>
+    <property name="server.dist.dir" location="../ivanweb/server"/>
+    <property name="server.hostname" value="jarry.itc.virginia.edu"/>
     <property name="server.hostname.http" value="http://${server.hostname}"/>
-    <property name="server.port" value="4000"/>
+    <property name="server.game.port" value="4000"/>
+    <property name="server.web.port" value="3000"/>
     <property name="server.mail.enabled" value="false"/>
     <property name="server.mail.hostname" value="l.mail.virginia.edu"/>
     <property name="server.mail.from" value="ivanhoe@nines.org"/>
@@ -28,21 +29,18 @@
     <property name="db.host" value="localhost"/>
     <property name="db.name" value="ivanhoe"/>
     <property name="db.user" value="ivanhoe"/>
-    <property name="db.pass" value="ivanhoe"/>
-    <property name="jnlp.url.base" value="${server.hostname.http}/ivanhoe"/>
-    <property name="jnlp.dir.base" location="/var/apache/htdocs/ivanhoe"/>
+    <property name="db.pass" value="gam3"/>
+    <property name="jnlp.url.base" value="${server.hostname.http}:${server.web.port}/client"/>
+    <property name="jnlp.dir.base" location="../ivanweb/public/client"/>
     <property name="game.discoursefield.dir" value="discourse_field"/>
-    <property name="game.id" value="1"/>
-    <property name="game.port" value="${server.port}"/>
     <property name="build.dir" location="build.${server.name}"/>
 
     <!-- properties to be written to other files -->
-    <property name="lobby.port" value="${server.port}"/>
     <urlencode property="server.name.url" value="${server.name}"/>
 
     <!-- deployment directories -->
-    <property name="dist.jnlp.url" value="${jnlp.url.base}/${server.name.url}"/>
-    <property name="dist.jnlp.dir" location="${jnlp.dir.base}/${server.name}"/>
+    <property name="dist.jnlp.url" value="${jnlp.url.base}"/>
+    <property name="dist.jnlp.dir" location="${jnlp.dir.base}"/>
 
     <!-- Global Settings -->
     <property name="javac.debug" value="on"/>
@@ -305,8 +303,7 @@
                 <replacetokens>
                     <token key="SERVER_NAME" value="${server.name}"/>
                     <token key="SERVER_HOSTNAME" value="${server.hostname}"/>
-                    <token key="LOBBY_PORT" value="${lobby.port}"/>
-                    <token key="LOBBY_BROADCAST_PORT" value="${lobby.broadcast.port}"/>
+                	<token key="SERVER_PORT" value="${server.game.port}"/>
                     <token key="DB_HOST" value="${db.host}"/>
                     <token key="DB_NAME" value="${db.name}"/>
                     <token key="DB_USER" value="${db.user}"/>
@@ -314,8 +311,6 @@
                     <token key="MAIL_ENABLED" value="${server.mail.enabled}"/>
                     <token key="MAIL_HOST" value="${server.mail.hostname}"/>
                     <token key="MAIL_FROM" value="${server.mail.from}"/>
-                    <token key="GAME_ID" value="${game.id}"/>
-                	<token key="GAME_PORT" value="${game.port}"/>
                     <token key="DISCOURSE_FIELD_DIR" value="${game.discoursefield.dir}"/>
                     <token key="ALLOW_NEW_ACCOUNTS" value="${server.newaccounts.allow}"/>
                     <token key="NEW_ACCOUNT_PERMISSIONS" value="${server.newaccounts.permissions}"/>
