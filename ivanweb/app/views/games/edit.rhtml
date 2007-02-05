@@ -1,9 +1,0 @@
-<h2>Edit Game</h2>
-
-<%= error_messages_for :game %>
-
-<% form_for(:game, :url => game_path(@game), :html => { :method => :put }) do |f| %>
-   <%= render :partial => "form", :locals => { :form => f } %>
-  <p class="update-button"><%= submit_tag "Update" %></p>
-<% end %>
-
