@@ -1,0 +1,37 @@
+<p><label class="form-label" for="game_name">Game Title</label><%= form.text_field 'name', { :class => 'form-field' } %></p>
+<p><label class="form-label" for="game_description">Description</label><%= form.text_area 'description', { :class => 'form-field' } %></p>
+<p><label class="form-label" for="game_objectives">Objectives</label><%= form.text_area 'objectives', { :class => 'form-field' } %></p>
+<p><label class="form-label" for="game_private">Private</label><%= form.check_box 'private', { :class => 'form-field-checkbox' } %></p>
+<p><label class="form-label" for="game_restricted">Restricted</label><%= form.check_box 'restricted', { :class => 'form-field-checkbox' } %></p>
+
+<script type="text/javascript">
+
+function migrateName() {
+
+    // Form.Element.getValue();
+    var playerList = $("player-list");
+    var guestList = $("guest-list");
+    
+    // add the player to the guest list if they are not already on the list
+    guestList.add( playerList.selected );
+    
+}
+
+</script> 
+      
+<div class="source-list">
+    <label for="player-list"><p>Ivanhoe Players</p></label>
+    <select id="player-list" name="selected_player" size="12"> 
+        <% for player in @player_list %>
+            <option value="<%= player.id %>"><%= player.display_name %></option> 
+        <% end %>
+    </select> 
+</div>
+
+<button class="migrate-button" onClick="javascript:migrateName()" type="button" >-></button>
+
+<div class="dest-list">
+    <label for="participant-list"><p>Game Participants</p></label>
+    <select id="participant-list" name="participant_list" size="12"> 
+    </select> 
+</div>
