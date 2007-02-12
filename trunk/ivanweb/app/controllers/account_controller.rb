@@ -25,7 +25,10 @@ class AccountController < ApplicationController
           @user.id = keyspace.next_value
           keyspace.next_value = keyspace.next_value + 1
           keyspace.save
-        
+          
+          @user.new_role_permission = true
+          @user.write_permission = true
+          
         if @user.save      
           session['user'] = Player.authenticate(@user.playername, params['user']['password'])
           flash['notice']  = "Signup successful"
