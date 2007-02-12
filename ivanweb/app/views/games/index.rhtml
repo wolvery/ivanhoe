@@ -1,5 +1,9 @@
 <div id="bodytext">
 
+<% if can_create_game? then %>
+    <p><a href="games/new">create a new game</a></p>
+<% end %>
+
 <h2 class="game-list-header">My Games</h2>
 
 <% if session['user'] then %>
@@ -54,7 +58,4 @@
 <% end %>
 </table>
 
-<% if can_create_game? then %>
-    <p><a href="games/new">create a new game</a></p>
-<% end %>
 </div>
