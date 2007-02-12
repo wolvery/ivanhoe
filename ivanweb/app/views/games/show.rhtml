@@ -2,6 +2,9 @@
 <div id="bodytext">
 <h2><%= @game.name %></h2>
 
+<p><a href="/games/launch/<%= @game.id %>.jnlp">play</a></p>
+
+
 <p ><%= @game.description %></p>
 
 <h3>Objectives</h3>
@@ -21,8 +24,6 @@
     <li><a href="/players/<%=player.id%>"><%= player.display_name %></a> <% if can_edit_game?(@game.id) %>- <a href="/journals/show/<%= @game.id %>?player_id=<%= player.id %>">view journal</a><% end %></li>
 <% end %>
 </ul>
-
-<a href="/games/launch/<%= @game.id %>.jnlp">play</a>
 
 <% if can_edit_game?(@game.id) then %>
     <a href="/games/edit/<%= @game.id %>">edit</a>
