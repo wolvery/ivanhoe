@@ -13,12 +13,15 @@ import java.util.Date;
 
 import edu.virginia.speclab.ivanhoe.client.game.model.discourse.CurrentAction;
 import edu.virginia.speclab.ivanhoe.client.game.model.discourse.DataNotFoundException;
+import edu.virginia.speclab.ivanhoe.client.game.model.discourse.DiscourseField;
 import edu.virginia.speclab.ivanhoe.client.game.model.discourse.DocumentVersionManager;
 import edu.virginia.speclab.ivanhoe.client.game.model.discourse.MoveEvent;
 import edu.virginia.speclab.ivanhoe.client.game.model.discourse.StartingMoveEvent;
 import edu.virginia.speclab.ivanhoe.client.game.view.Workspace;
 import edu.virginia.speclab.ivanhoe.client.game.view.document.DocumentEditor;
+import edu.virginia.speclab.ivanhoe.client.game.view.document.InfoPanel;
 import edu.virginia.speclab.ivanhoe.shared.SimpleLogger;
+import edu.virginia.speclab.ivanhoe.shared.blist.BCollection;
 import edu.virginia.speclab.ivanhoe.shared.data.ActionType;
 import edu.virginia.speclab.ivanhoe.shared.data.Link;
 import edu.virginia.speclab.ivanhoe.shared.data.LinkType;
@@ -141,10 +144,24 @@ public class DiscourseFieldState
     
     private boolean doSelection( DocumentArea docArea )
     {
-        DocumentInfo docInfo =
-                navigator.getDiscourseField().getDocumentInfo(docArea.getDocumentName());
-        Workspace.instance.openStemmaWindow( docInfo, navigator.getDiscourseField() );
-           
+		DiscourseField discourseField = navigator.getDiscourseField();
+    	DocumentInfo docInfo = discourseField.getDocumentInfo(docArea.getDocumentName());
+    	BCollection docVersions = discourseField.getDocumentVersionManager().getDocumentVersions(docInfo);
+    	Iterator i = docVersions.iterator();
+    	DocumentVersion firstVersion = (DocumentVersion) i.next();
+    	
+        if(!i.hasNext()) {
+        	
+            Workspace.instance.openEditor(firstVersion);
+            
+    	    // hide the info panel 
+    	    final InfoPanel infoPanel = Workspace.instance.getInfoPanel();
+    	    if( infoPanel != null ) infoPanel.setVisible(false);
+        }
+        else {
+            Workspace.instance.openStemmaWindow( docInfo, discourseField );        	
+        }
+        
         return true;
     }
     
