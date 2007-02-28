@@ -206,7 +206,7 @@ public class StemmaView extends
             	if (e.isControlDown()) {
             		smoothZoom( dy / -100.0f );
             	} else {
-            		smoothPan(dx, 0); // horizontal movement only
+            		smoothPan(dx, dy); // horizontal movement only
             	}
             }
             
