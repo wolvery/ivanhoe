@@ -10,11 +10,16 @@ class Game < ActiveRecord::Base
     games = []
     moves.each do |move| 
       game_id = move.fk_game_id
-      game = Game.find(game_id)
       
-      if games.size < 5 and not games.include? game then
-        games << game
-      end     
+      begin
+        game = Game.find(game_id)
+        if games.size < 5 and not games.include? game then
+          games << game
+        end     
+      rescue
+        # ignore games that no longer exist
+      end
+      
     end
     
     games
