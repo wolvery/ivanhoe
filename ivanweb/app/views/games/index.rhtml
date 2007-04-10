@@ -1,7 +1,7 @@
 <div id="bodytext">
 
 <% if can_create_game? then %>
-    <p><a href="games/new">create a new game</a></p>
+    <p><a href="/games/new">create a new game</a></p>
 <% end %>
 
 <h2 class="game-list-header">My Games</h2>
@@ -13,8 +13,8 @@
       <tr/>
     <% for game in @my_games %>
       <tr class="game-list-row">
-        <td><a href="games/show/<%= game.id %>"><%= game.name %></a></td>
-        <td><% if game.can_play? session['user'] -%><a href="games/launch/<%= game.id %>.jnlp">Play</a><% end -%></td>
+        <td><a href="/games/show/<%= game.id %>"><%= game.name %></a></td>
+        <td><% if game.can_play? session['user'] -%><a href="/games/launch/<%= game.id %>.jnlp">Play</a><% end -%></td>
         <% if admin? then %>
             <td><%= link_to 'Delete', game_path(game), :confirm => "Delete game \"#{game.name}\"?", :method => :delete %></td>
         <% end %>
@@ -33,8 +33,8 @@
   <tr/>
 <% for game in @active_games %>
   <tr class="game-list-row">
-    <td><a href="games/show/<%= game.id %>"><%= game.name %></a></td>
-    <td><% if game.can_play? session['user'] -%><a href="games/launch/<%= game.id %>.jnlp">Play</a><% end -%></td>
+    <td><a href="/games/show/<%= game.id %>"><%= game.name %></a></td>
+    <td><% if game.can_play? session['user'] -%><a href="/games/launch/<%= game.id %>.jnlp">Play</a><% end -%></td>
     <% if admin? then %>
         <td><%= link_to 'Delete', game_path(game), :confirm => "Delete game \"#{game.name}\"?", :method => :delete %></td>
     <% end %>
@@ -49,8 +49,8 @@
   <tr/>
 <% for game in @archive_games %>
   <tr class="game-list-row">
-    <td><a href="games/show/<%= game.id %>"><%= game.name %></a></td>
-    <td><% if game.can_play? session['user'] -%><a href="games/launch/<%= game.id %>.jnlp">Play</a><% end -%></td>
+    <td><a href="/games/show/<%= game.id %>"><%= game.name %></a></td>
+    <td><% if game.can_play? session['user'] -%><a href="/games/launch/<%= game.id %>.jnlp">Play</a><% end -%></td>
     <% if admin? then %>
         <td><%= link_to 'Delete', game_path(game), :confirm => "Delete game \"#{game.name}\"?", :method => :delete %></td>
     <% end %>
