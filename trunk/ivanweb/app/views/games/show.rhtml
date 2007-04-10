@@ -10,22 +10,25 @@
 <h3>Objectives</h3>
 <p ><%= @game.objectives %></p>
 
-<% if @game.private then %>
-    <p >This game is private.</p>
-<% end %>
-
-<% if @game.restricted then %>
-    <p >This game has a guest list.</p>
-<% end %>
-
-<h3>Player List</h3>
-<ul >
-<% for player in @players %>
-    <li><a href="/players/<%=player.id%>"><%= player.display_name %></a> <% if can_edit_game?(@game.id) %>- <a href="/journals/show/<%= @game.id %>?player_id=<%= player.id %>">view journal</a><% end %></li>
-<% end %>
-</ul>
-
-<% if can_edit_game?(@game.id) then %>
+<% if @game.restricted then -%>
+    <h3>Guest List (restricted game invite-only)</h3>
+<% else -%>
+    <h3>Participant List (unrestricted game)</h3>
+<% end -%>
+<% if @players.size > 0 -%>
+    <ul>
+    <% for player in @players -%>
+        <li><a href="/players/<%=player.id%>"><%= player.display_name %></a> <% if can_edit_game?(@game.id) %>- <a href="/journals/show/<%= @game.id %>?player_id=<%= player.id %>">view journal</a><% end %></li>
+    <% end -%>
+    </ul>
+<% else -%>
+    <% if @game.restricted -%>
+    <p>No players have been invited to this game.</p> 
+    <% else -%>
+    <p>No players have yet participated in this game.</p>
+    <% end -%>
+<% end -%>
+<% if can_edit_game?(@game.id) then -%>
     <a href="/games/edit/<%= @game.id %>">edit</a>
-<% end %>
+<% end -%>
 </div>

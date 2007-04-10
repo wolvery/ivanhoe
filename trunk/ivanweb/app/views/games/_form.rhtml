@@ -1,36 +1,93 @@
 <p><label class="form-label" for="game_name">Game Title</label><%= form.text_field 'name', { :class => 'form-field' } %></p>
 <p><label class="form-label" for="game_description">Description</label><%= form.text_area 'description', { :class => 'form-field' } %></p>
 <p><label class="form-label" for="game_objectives">Objectives</label><%= form.text_area 'objectives', { :class => 'form-field' } %></p>
-<!-- <p><label class="form-label" for="game_private">Private</label><%= form.check_box 'private', { :class => 'form-field-checkbox' } %></p>
-<p><label class="form-label" for="game_restricted">Restricted</label><%= form.check_box 'restricted', { :class => 'form-field-checkbox' } %></p>
+
+<p><label class="form-label" for="game_restricted">Restricted</label><%= form.check_box 'restricted', { :onclick => 'toggleGuestSelection()', :class => 'form-field-checkbox' } %></p>
+<p>Select this option to restrict access to the game to a select few.</p>
 
 <script type="text/javascript">
 
-function migrateName() {
+function toggleGuestSelection() {
+    var restrictedField = $('game_restricted');
+    var guestSelection = $('guest-selection');
+    
+    if( restrictedField.checked == true ) {           
+        guestSelection.show();
+    }
+    else {
+        guestSelection.hide();
+    }
+}
 
-    // Form.Element.getValue();
-    playerList = $F("player-list");
+function addNameToGuestList() {
+    var playerList = $("player-list");
     
-    // add the player to the guest list if they are not already on the list
-    //guestList.add( playerList.selected );
+    if( playerList.selectedIndex != -1 ) {
+        var selectedPlayer = playerList.options[playerList.selectedIndex];
+        var guestList = $("guest-list");
+        
+        // make sure this player isn't already on the list
+        for( var i=0; i < guestList.options.length; i++ ) {
+            var option = guestList.options[i];
+            if( option.value == selectedPlayer.value ) return;
+        }
+        
+        var option = document.createElement("option");
+        option.text = selectedPlayer.text;
+        option.value = selectedPlayer.value;
+        guestList.appendChild(option);    
+        
+        var codes = readGuestCodes();
+        codes[codes.length] = selectedPlayer.value;
+        $('game_guest_codes').value = codes.toJSON();         
+    }
+}
+
+function readGuestCodes() {
+    var codes = $('game_guest_codes').value;
+    return (codes == null || codes.length == 0) ? [] : codes.evalJSON();
+}
+
+function removeNameFromGuestList() {
+    var guestList = $("guest-list");
     
+    if( guestList.selectedIndex != -1 ) {
+        var selectedPlayer = guestList.options[guestList.selectedIndex];
+        guestList.selectedIndex = -1;
+        guestList.removeChild(selectedPlayer);
+        var codes = readGuestCodes();
+        codes = codes.without(selectedPlayer.value);
+        $('game_guest_codes').value = codes.toJSON();         
+    }
 }
 
 </script> 
-      
-<div class="source-list">
-    <label for="player-list"><p>Ivanhoe Players</p></label>
-    <select id="player-list" name="selected_player" size="12"> 
-        <% for player in @player_list %>
-            <option value="<%= player.id %>"><%= player.display_name %></option> 
-        <% end %>
-    </select> 
+
+<div id="guest-selection" <% if not @game.restricted -%> style="display:none" <% end -%>>      
+    <div class="source-list">
+        <label for="player-list"><p>Ivanhoe Players</p></label>
+        <select id="player-list" name="selected_player" size="12"> 
+            <% for player in @player_list -%>
+                <option value="<%= player.id %>"><%= player.display_name %></option> 
+            <% end -%>
+        </select> 
+    </div>
+    
+    <div>
+        <button class="migrate-button" onClick="javascript:removeNameFromGuestList()" type="button" ><-</button>
+        <button class="migrate-button" onClick="javascript:addNameToGuestList()" type="button" >-></button>
+    </div>
+    
+    <div class="dest-list">
+        <label for="guest-list"><p>Game Guests</p></label>  
+        <select id="guest-list" name="guest_list" size="12"> 
+            <% if @guests -%>
+                <% for player in @guests -%>
+                    <option value="<%= player.id %>"><%= player.display_name %></option> 
+                <% end -%>
+            <% end -%>
+        </select> 
+    </div>
 </div>
 
-<button class="migrate-button" onClick="javascript:migrateName()" type="button" >-></button>
-
-<div class="dest-list">
-    <label for="participant-list"><p>Game Participants</p></label>
-    <select id="participant-list" name="participant_list" size="12"> 
-    </select> 
-</div> -->
+<%= form.hidden_field 'guest_codes' %>
