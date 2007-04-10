@@ -2,8 +2,9 @@
 <div id="bodytext">
 <h2><%= @game.name %></h2>
 
+<% if @game.can_play? session['user'] -%>
 <p><a href="/games/launch/<%= @game.id %>.jnlp">play</a></p>
-
+<% end -%>
 
 <p ><%= @game.description %></p>
 

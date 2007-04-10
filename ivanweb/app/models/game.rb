@@ -30,27 +30,21 @@ class Game < ActiveRecord::Base
     games
   end
   
+  # can this player play in this game?
+  def can_play?( player )
+    return true if not restricted or ( player and player.admin )
+    found = RestrictedGamePlayerList.find( :first, :conditions => ['fk_game_id = ? and fk_player_id = ?', id, player.id ]) if player
+    found ? true : false
+  end
+  
+  # take a set of player objects and convert to player id array in JSON format
   def encode_guests( players )
     guests = []
     players.each { |p| guests << p.id }
     @guest_codes = guests.to_json
   end
   
-  def decode_guests
-    players = []
-    if @guest_codes then
-      player_ids = JSON.parse(@guest_codes)
-      player_ids.each { |id|
-        begin
-          players << Player.find(id.to_i)
-        rescue
-          # ignore invalid player ids
-        end
-      }
-    end
-    players
-  end
-  
+  # update the guest list based on the contents of the guest_codes
   def update_guest_list()
   
     # get the existing guest list from db
