@@ -21,7 +21,12 @@ class GamesController < ApplicationController
   # GET /games/1
   def show
     @game = Game.find(params[:id])    
-    @players = GamePlayerList.get_players( @game.id )
+
+    if @game.restricted then
+      @players = RestrictedGamePlayerList.get_players( @game.id )
+    else
+      @players = GamePlayerList.get_players( @game.id )
+    end
   
     respond_to do |format|
       format.html
@@ -46,7 +51,9 @@ class GamesController < ApplicationController
   # GET /games/1;edit
   def edit
     @game = Game.find(params[:id])
+    @guests = RestrictedGamePlayerList.get_players(@game.id)
     @player_list = Player.find(:all, :order => 'lname')
+    @game.encode_guests( @guests )
   end
 
   # POST /games
@@ -65,6 +72,7 @@ class GamesController < ApplicationController
     
     respond_to do |format|
       if @game.save
+        @game.update_guest_list
         flash[:notice] = 'Game was successfully created.'
         format.html { redirect_to game_url(@game) }
         format.xml  { head :created, :location => game_url(@game) }
@@ -82,6 +90,7 @@ class GamesController < ApplicationController
 
     respond_to do |format|
       if @game.update_attributes(params[:game])
+        @game.update_guest_list
         flash[:notice] = 'Game was successfully updated.'
         format.html { redirect_to game_url(@game) }
         format.xml  { head :ok }
@@ -103,4 +112,5 @@ class GamesController < ApplicationController
       format.xml  { head :ok }
     end
   end
+  
 end
