@@ -14,7 +14,7 @@
     <% for game in @my_games %>
       <tr class="game-list-row">
         <td><a href="games/show/<%= game.id %>"><%= game.name %></a></td>
-        <td><a href="games/launch/<%= game.id %>.jnlp">Play</a></td>
+        <td><% if game.can_play? session['user'] -%><a href="games/launch/<%= game.id %>.jnlp">Play</a><% end -%></td>
         <% if admin? then %>
             <td><%= link_to 'Delete', game_path(game), :confirm => "Delete game \"#{game.name}\"?", :method => :delete %></td>
         <% end %>
@@ -34,7 +34,7 @@
 <% for game in @active_games %>
   <tr class="game-list-row">
     <td><a href="games/show/<%= game.id %>"><%= game.name %></a></td>
-    <td><a href="games/launch/<%= game.id %>.jnlp">Play</a></td>
+    <td><% if game.can_play? session['user'] -%><a href="games/launch/<%= game.id %>.jnlp">Play</a><% end -%></td>
     <% if admin? then %>
         <td><%= link_to 'Delete', game_path(game), :confirm => "Delete game \"#{game.name}\"?", :method => :delete %></td>
     <% end %>
@@ -50,7 +50,7 @@
 <% for game in @archive_games %>
   <tr class="game-list-row">
     <td><a href="games/show/<%= game.id %>"><%= game.name %></a></td>
-    <td><a href="games/launch/<%= game.id %>.jnlp">Play</a></td>
+    <td><% if game.can_play? session['user'] -%><a href="games/launch/<%= game.id %>.jnlp">Play</a><% end -%></td>
     <% if admin? then %>
         <td><%= link_to 'Delete', game_path(game), :confirm => "Delete game \"#{game.name}\"?", :method => :delete %></td>
     <% end %>
