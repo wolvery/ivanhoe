@@ -1,4 +1,4 @@
-require 'json'
+#require 'json'
 
 class Game < ActiveRecord::Base
   set_table_name "game"   
@@ -42,17 +42,18 @@ class Game < ActiveRecord::Base
   def encode_guests( players )
     guests = []
     players.each { |p| guests << p.id }
-    @guest_codes = guests.to_json
+ #   @guest_codes = guests.to_json
   end
   
   # update the guest list based on the contents of the guest_codes
   def update_guest_list()
+    return
   
     # get the existing guest list from db
     existing_entries = RestrictedGamePlayerList.find( :all, :conditions => ['fk_game_id = ?', id ] )
 
     # the list of guests is transported in a JSON array
-    guest_ids = JSON.parse(@guest_codes) if @guest_codes
+    #guest_ids = JSON.parse(@guest_codes) if @guest_codes
 
     # add any entries not present in the db
     guest_ids.each { |guest_id|       
