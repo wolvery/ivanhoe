@@ -1,3 +1,4 @@
+require 'JSON'
 
 class Game < ActiveRecord::Base
   set_table_name "game"   
