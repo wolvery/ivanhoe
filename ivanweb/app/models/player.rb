@@ -18,7 +18,7 @@ class Player < ActiveRecord::Base
   
   def can_edit_game?(game_id)
     game = Game.find(game_id)   
-    return ( game and game.fk_creator_id == @id and @new_game_permission )
+    return ( game and (game.fk_creator_id.to_i == id.to_i) and new_game_permission )
   end
     
   protected
