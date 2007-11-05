@@ -225,7 +225,7 @@ public class IvanhoeGame implements IMessageHandler, RestoreSessionTransactionLi
                 + File.separator + propertiesManager.getProperty("workingDir");
         String workingDir = createGameDirectory( baseDir,
                 gameProxy.getHostname(), gameProxy.getPort(),
-                gameInfo.getName());
+                gameInfo.getDirectoryName());
         
         // create user/game work directory
         if ( workingDir == null )
