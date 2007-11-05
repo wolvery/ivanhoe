@@ -181,11 +181,13 @@ public class IvanhoeGame implements IMessageHandler, RestoreSessionTransactionLi
     private String createGameDirectory( String baseDir, String hostname,
             int port, String gameName)
     {       
+      String safeName = gameName.toLowerCase().replace('"', '_');
+    	
        // create game dir
        String workingDir = 
                baseDir + File.separator
                + hostname + "-" + port + File.separator
-               + gameName + File.separator;
+               + safeName + File.separator;
        if (Ivanhoe.createDirectory(workingDir) == false)
        {
           return null;
@@ -225,7 +227,7 @@ public class IvanhoeGame implements IMessageHandler, RestoreSessionTransactionLi
                 + File.separator + propertiesManager.getProperty("workingDir");
         String workingDir = createGameDirectory( baseDir,
                 gameProxy.getHostname(), gameProxy.getPort(),
-                gameInfo.getDirectoryName());
+                gameInfo.getName());
         
         // create user/game work directory
         if ( workingDir == null )

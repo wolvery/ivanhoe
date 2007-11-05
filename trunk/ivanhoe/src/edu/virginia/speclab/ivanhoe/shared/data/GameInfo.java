@@ -135,11 +135,6 @@ public class GameInfo implements Serializable
       return name;
    }
    
-   public String getDirectoryName() 
-   {
-	  return name.toLowerCase().replace('"', '_');
-   }
-   
    /**
     * @return is this a restricted-access game
     */
