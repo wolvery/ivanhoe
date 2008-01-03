@@ -1,7 +1,6 @@
 
 #account-bar {
     float: right;
-    clear: both;
 }
 
 #game-list {
@@ -30,17 +29,24 @@
 
 .source-list {
     float: left;
-    margin: 20px;
+    width: 150px;
+    margin: 10px;
+}
+
+#migrate-button-set {
+    margin-left: 190px;
 }
 
 .migrate-button {
     margin-top: 120px;
+    margin-left: 5px;
     float: left;
 }
 
 .dest-list {
     float: left;
-    margin: 20px;
+    width: 150px;
+    margin: 10px;
 }
 
 .dest-list select {
