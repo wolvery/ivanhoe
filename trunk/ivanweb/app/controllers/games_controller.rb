@@ -8,7 +8,8 @@ class GamesController < ApplicationController
   # GET /games
   # GET /games.xml
   def index
-    @current_user = Player.find(session['user']) if session['user']
+    logger.info "Session user id = #{session['user']}"
+    @current_user = Player.find_by_id(session['user']) if session['user']
     @archive_games = Game.find(:all)
     @active_games = Game.active_games
     @my_games = GamePlayerList.get_games(session['user'])
@@ -21,7 +22,7 @@ class GamesController < ApplicationController
 
   # GET /games/1
   def show
-    @current_user = Player.find(session['user']) if session['user']
+    @current_user = Player.find_by_id(session['user']) if session['user']
     @game = Game.find(params[:id])    
 
     if @game.restricted then
