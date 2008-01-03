@@ -21,8 +21,8 @@
 <body><div id="container" class="singlecol">
 
  <div id="account-bar" >
-  <% if session['user'] %>
-    <p>You are logged in as <%= session['user'].playername %>. Click <a href="/account/logout">here</a> to logout.</p>
+  <% if @current_user %>
+    <p>You are logged in as <%= @current_user.playername %>. Click <a href="/account/logout">here</a> to logout.</p>
   <% else %>
     <p>Click <a href="/account/login">here</a> to login.</p>
   <% end %>
@@ -44,7 +44,7 @@
         <% if admin? then %>
             <li><a href="/players/">Admin</a></li>
         <% end %>
-        <% if !session['user'] %>
+        <% unless @current_user %>
             <li><a href="/account/signup">Join</a></li>
         <% end %>
 	</ul>

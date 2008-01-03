@@ -4,8 +4,9 @@ class AccountController < ApplicationController
   def login
     case request.method
       when :post
-        if session['user'] = Player.authenticate(params['user']['login'], params['user']['password'])
-
+        user = Player.authenticate(params['user']['login'], params['user']['password'])
+        if user 
+          session['user'] = user.id
           flash['notice']  = "Login successful"
           redirect_back_or_default :controller => "games", :action => "index"
         else
@@ -30,7 +31,8 @@ class AccountController < ApplicationController
           @user.write_permission = true
           
         if @user.save      
-          session['user'] = Player.authenticate(@user.playername, params['user']['password'])
+          new_user = Player.authenticate(@user.playername, params['user']['password'])
+          session['user'] = new_user.id
           flash['notice']  = "Signup successful"
           redirect_back_or_default :controller => "games", :action => "index"          
         end
