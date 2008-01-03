@@ -8,11 +8,11 @@ class ApplicationController < ActionController::Base
   session :session_key => '_ivanweb_session_id'
   
   def game_creator_filter
-    (session['user'] and session['user'].new_game_permission)
+    ( @current_user and @current_user.new_game_permission )
   end
   
   def admin_filter
-    (session['user'] and session['user'].admin)
+    ( @current_user and @current_user.admin )
   end
   
 end

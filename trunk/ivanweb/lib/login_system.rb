@@ -3,18 +3,6 @@ module LoginSystem
   
   protected
   
-  # overwrite this if you want to restrict access to only a few actions
-  # or if you want to check if the user has the correct rights  
-  # example:
-  #
-  #  # only allow nonbobs
-  #  def authorize?(user)
-  #    user.login != "bob"
-  #  end
-  def authorize?(user)
-     true
-  end
-  
   # overwrite this method if you only want to protect certain actions of the controller
   # example:
   # 
@@ -45,7 +33,12 @@ module LoginSystem
       return true  
     end
 
-    if session['user'] and authorize?(session['user'])
+    if session['user'] 
+      begin
+        @current_user = Player.find(session['user'])
+      rescue
+        return false
+      end
       return true
     end
 

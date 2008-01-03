@@ -22,10 +22,10 @@ class GamePlayerList < ActiveRecord::Base
     players
   end
   
-  def self.get_games( player )
-   return nil if not player
-      
-   game_ids = find(:all, :conditions => [ "fk_player_id = ?", player.id ] )   
+  def self.get_games( player_id )
+   return [] if not player_id
+
+   game_ids = find(:all, :conditions => [ "fk_player_id = ?", player_id ] )   
 
    # only get games which have this role participating in play
    game_ids = game_ids.select { |game_id|
