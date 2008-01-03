@@ -33,13 +33,9 @@ module LoginSystem
       return true  
     end
 
-    if session['user'] 
-      begin
-        @current_user = Player.find_by_id(session['user'])
-      rescue
-        return false
-      end
-      return true
+    if !session['user'].nil? 
+      @current_user = Player.find_by_id(session['user'])
+      return true unless @current_user.nil?
     end
 
     # store current location so that we can 
