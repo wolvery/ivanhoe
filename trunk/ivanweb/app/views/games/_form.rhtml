@@ -5,64 +5,6 @@
 <p><label class="form-label" for="game_restricted">Restricted</label><%= form.check_box 'restricted', { :onclick => 'toggleGuestSelection()', :class => 'form-field-checkbox' } %></p>
 <p>Select this option to restrict access to the game to a select few.</p>
 
-<script type="text/javascript">
-
-function toggleGuestSelection() {
-    var restrictedField = $('game_restricted');
-    var guestSelection = $('guest-selection');
-    
-    if( restrictedField.checked == true ) {           
-        guestSelection.show();
-    }
-    else {
-        guestSelection.hide();
-    }
-}
-
-function addNameToGuestList() {
-    var playerList = $("player-list");
-    
-    if( playerList.selectedIndex != -1 ) {
-        var selectedPlayer = playerList.options[playerList.selectedIndex];
-        var guestList = $("guest-list");
-        
-        // make sure this player isn't already on the list
-        for( var i=0; i < guestList.options.length; i++ ) {
-            var option = guestList.options[i];
-            if( option.value == selectedPlayer.value ) return;
-        }
-        
-        var option = document.createElement("option");
-        option.text = selectedPlayer.text;
-        option.value = selectedPlayer.value;
-        guestList.appendChild(option);    
-        
-        var codes = readGuestCodes();
-        codes[codes.length] = selectedPlayer.value;
-        $('game_guest_codes').value = codes.toJSON();         
-    }
-}
-
-function readGuestCodes() {
-    var codes = $('game_guest_codes').value;
-    return (codes == null || codes.length == 0) ? [] : codes.evalJSON();
-}
-
-function removeNameFromGuestList() {
-    var guestList = $("guest-list");
-    
-    if( guestList.selectedIndex != -1 ) {
-        var selectedPlayer = guestList.options[guestList.selectedIndex];
-        guestList.selectedIndex = -1;
-        guestList.removeChild(selectedPlayer);
-        var codes = readGuestCodes();
-        codes = codes.without(selectedPlayer.value);
-        $('game_guest_codes').value = codes.toJSON();         
-    }
-}
-
-</script> 
-
 <div id="guest-selection" <% if not @game.restricted -%> style="display:none" <% end -%>>      
     <div class="source-list">
         <label for="player-list"><p>Ivanhoe Players</p></label>
@@ -73,7 +15,7 @@ function removeNameFromGuestList() {
         </select> 
     </div>
     
-    <div>
+    <div id="migrate-button-set" >
         <button class="migrate-button" onClick="javascript:removeNameFromGuestList()" type="button" ><-</button>
         <button class="migrate-button" onClick="javascript:addNameToGuestList()" type="button" >-></button>
     </div>

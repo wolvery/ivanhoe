@@ -20,13 +20,6 @@
 
 <body><div id="container" class="singlecol">
 
- <div id="account-bar" >
-  <% if logged_in? %>
-    <p>You are logged in as <%= current_user.playername %>. Click <a href="/account/logout">here</a> to logout.</p>
-  <% else %>
-    <p>Click <a href="/account/login">here</a> to login.</p>
-  <% end %>
-  </div>  
 
 <!-- header ................................. -->
 <div id="header">
@@ -50,6 +43,14 @@
 	</ul>
 
 </div><!-- /navigation -->
+
+ <div id="account-bar" >
+  <% if logged_in? %>
+    <p>You are logged in as <%= current_user.playername %>. Click <a href="/account/logout">here</a> to logout.</p>
+  <% else %>
+    <p>Click <a href="/account/login">here</a> to login.</p>
+  <% end %>
+  </div>  
 
 <hr class="low" />
 

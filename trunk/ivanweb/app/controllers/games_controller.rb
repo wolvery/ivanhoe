@@ -79,7 +79,7 @@ class GamesController < ApplicationController
         format.html { redirect_to game_url(@game) }
         format.xml  { head :created, :location => game_url(@game) }
       else
-        format.html { render :action => "new" }
+        format.html { new; render :action => "new" }
         format.xml  { render :xml => @game.errors.to_xml }
       end
     end
@@ -97,7 +97,7 @@ class GamesController < ApplicationController
         format.html { redirect_to game_url(@game) }
         format.xml  { head :ok }
       else
-        format.html { render :action => "edit" }
+        format.html { edit; render :action => "edit" }
         format.xml  { render :xml => @game.errors.to_xml }
       end
     end
