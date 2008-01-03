@@ -35,7 +35,7 @@ module LoginSystem
 
     if session['user'] 
       begin
-        @current_user = Player.find(session['user'])
+        @current_user = Player.find_by_id(session['user'])
       rescue
         return false
       end
