@@ -1,5 +1,13 @@
 # Methods added to this helper will be available to all templates in the application.
 module ApplicationHelper
+  
+  def logged_in?
+    @current_user
+  end
+  
+  def current_user
+    @current_user
+  end
 
   def admin?
     ( @current_user and @current_user.admin )
