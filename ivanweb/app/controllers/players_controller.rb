@@ -1,6 +1,7 @@
 class PlayersController < ApplicationController
 
-  before_filter :admin_filter, :except => :show
+  before_filter :login_required
+  before_filter :admin_filter
 
   layout "main_frame"
 
