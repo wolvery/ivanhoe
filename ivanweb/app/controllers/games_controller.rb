@@ -62,24 +62,25 @@ class GamesController < ApplicationController
   # POST /games.xml
   def create
     @game = Game.new(params[:game])
-    
+
+    # the current user is the creator of this game
+    @game.fk_creator_id = session['user']
+
     # use ivanhoe's keyspace table for unique id
     keyspace = Keyspace.find( :first, :conditions => "tablename = 'game'" )
     @game.id = keyspace.next_value
-    keyspace.next_value = keyspace.next_value + 1
-    keyspace.save
-    
-    # the current user is the creator of this game
-    @game.fk_creator_id = session['user']
     
     respond_to do |format|
-      if @game.save
+      if @game.save            
+        keyspace.next_value = keyspace.next_value + 1
+        keyspace.save    
         @game.update_guest_list
         flash[:notice] = 'Game was successfully created.'
         format.html { redirect_to game_url(@game) }
         format.xml  { head :created, :location => game_url(@game) }
       else
-        format.html { new; render :action => "new" }
+        @player_list = Player.find(:all, :order => 'lname')
+        format.html { render :action => "new" }
         format.xml  { render :xml => @game.errors.to_xml }
       end
     end
@@ -97,7 +98,10 @@ class GamesController < ApplicationController
         format.html { redirect_to game_url(@game) }
         format.xml  { head :ok }
       else
-        format.html { edit; render :action => "edit" }
+        @guests = RestrictedGamePlayerList.get_players(@game.id)
+        @player_list = Player.find(:all, :order => 'lname')
+        @game.encode_guests( @guests )
+        format.html { render :action => "edit" }
         format.xml  { render :xml => @game.errors.to_xml }
       end
     end
