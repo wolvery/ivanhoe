@@ -37,6 +37,7 @@ class GamesController < ApplicationController
   end
   
   def launch
+    @current_user = Player.find_by_id(session['user']) 
     @game = Game.find(params[:id])
 
     respond_to do |format|
