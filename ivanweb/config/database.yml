@@ -12,7 +12,7 @@
 #   http://dev.mysql.com/doc/refman/5.0/en/old-client.html
 development:
   adapter: mysql
-  database: ivanhoe_unstable
+  database: ivanhoe_development
   username: ivanhoe
   password: gam3
   host: localhost
@@ -29,7 +29,7 @@ test:
 
 production:
   adapter: mysql
-  database: ivanhoe_unstable
+  database: ivanhoe_production
   username: ivanhoe
   password: gam3
   host: localhost
