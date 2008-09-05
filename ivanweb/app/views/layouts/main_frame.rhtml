@@ -29,17 +29,17 @@
 <!-- navigation ................................. -->
 <div id="navigation">
 	<ul>
-		<li><a href="/wordpress">Home</a></li>
-		<li><a href="/wordpress/about">About</a></li>
-        <li><a href="/wordpress/demo">Demo</a></li>
-        <li><a href="/games">Games</a></li>
-        <li><a href="/wordpress/help">Help</a></li>
-        <% if admin? then %>
-            <li><a href="/players/">Admin</a></li>
-        <% end %>
-        <% unless logged_in? %>
-            <li><a href="/account/signup">Join</a></li>
-        <% end %>
+		<li><a href="/">Home</a></li>
+    <li><a href="/games">Games</a></li>
+    <li><a href="/wordpress/?page_id=10">Demo</a></li>
+    <li><a href="/wordpress/?page_id=8">Help</a></li>
+		<li><a href="/wordpress/?page_id=2">About</a></li>
+    <% if admin? then %>
+        <li><a href="/players/">Admin</a></li>
+    <% end %>
+    <% unless logged_in? %>
+        <li><a href="/account/signup">Join</a></li>
+    <% end %>
 	</ul>
 
 </div><!-- /navigation -->
