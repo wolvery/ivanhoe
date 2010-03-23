@@ -30,7 +30,8 @@
     <property name="db.name" value="ivanhoe"/>
     <property name="db.user" value="ivanhoe"/>
     <property name="db.pass" value="gam3"/>
-    <property name="jnlp.url.base" value="${server.hostname.http}:${server.web.port}/client"/>
+    <!-- <property name="jnlp.url.base" value="${server.hostname.http}:${server.web.port}/client"/> -->
+    <property name="jnlp.url.base" value="${server.hostname.http}/client"/>
     <property name="jnlp.dir.base" location="../ivanweb/public/client"/>
     <property name="game.discoursefield.dir" value="discourse_field"/>
     <property name="build.dir" location="build.${server.name}"/>
