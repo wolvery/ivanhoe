@@ -2,7 +2,7 @@
 <!-- JNLP File for Ivanhoe -->
 <jnlp
   spec="1.0+"
-  codebase="http://faustroll.clas.virginia.edu/ivanhoe"
+  codebase="@JNLP_URL@"
   href="ivanhoe-resman.jnlp">
   <information>
     <title>Ivanhoe Game</title>
